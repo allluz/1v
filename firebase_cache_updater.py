@@ -259,6 +259,64 @@ def generate_game_data():
     }
 
 
+# ─── SPORTS DATA ────────────────────────────────────────
+def fetch_sports():
+    """Retorna dados de futebol com base no dia do ano (determinístico).
+    No futuro, integrar com API football-data.org ou similar."""
+    day_of_year = datetime.now().timetuple().tm_yday
+
+    def rotate(lst, n=3):
+        return [(day_of_year * 7 + i * 11) % len(lst) for i in range(n)]
+
+    BRASILEIRAO_TEAMS = [
+        "Botafogo", "Palmeiras", "Flamengo", "Fortaleza", "Internacional",
+        "São Paulo", "Corinthians", "Bahia", "Cruzeiro", "Vasco",
+        "Grêmio", "Santos", "Sport", "Mirassol", "Red Bull Bragantino",
+        "Vitória", "Athletico-PR", "Cuiabá", "Atlético-GO", "Juventude"
+    ]
+    PARANAENSE_TEAMS = [
+        "Athletico-PR", "Operário", "Maringá", "Londrina", "Coritiba",
+        "São Joseense", "Rio Branco", "Cascavel", "Azuriz", "Andraus",
+        "Galático", "PSTC"
+    ]
+    CATARINENSE_TEAMS = [
+        "Avaí", "Criciúma", "Chapecoense", "Brusque", "Figueirense",
+        "Joinville", "Hercílio Luz", "Concórdia", "Barra", "Caravaggio",
+        "Marcílio Dias", "Santa Catarina"
+    ]
+
+    def gen_standings(teams, n_top=20):
+        shuffled = rotate(teams, len(teams))
+        out = []
+        for i, idx in enumerate(shuffled):
+            pts = (len(teams) - i) * 3 + (day_of_year % 5)
+            w = (len(teams) - i) * 2
+            d = len(teams) - i
+            l = i
+            gp = w + d + l
+            wins_seq = ["W"] * min(3, 5)
+            draws_seq = ["D"] * min(1, 5 - len(wins_seq))
+            losses_seq = ["L"] * min(1, 5 - len(wins_seq) - len(draws_seq))
+            last5 = (wins_seq + draws_seq + losses_seq)[:5]
+            pos = i + 1
+            out.append({
+                "pos": pos,
+                "name": teams[idx],
+                "pts": pts,
+                "gp": gp,
+                "w": w,
+                "d": d,
+                "l": l,
+                "last5": last5
+            })
+        return out
+
+    return [
+        {"league": "brasileirao", "teams": gen_standings(BRASILEIRAO_TEAMS)},
+        {"league": "paranaense", "teams": gen_standings(PARANAENSE_TEAMS)},
+        {"league": "catarinense", "teams": gen_standings(CATARINENSE_TEAMS)}
+    ]
+
 # ────────────────────────────────────────────────────────
 
 def main():
@@ -293,11 +351,18 @@ def main():
     fb_put("/games", game_data)
     print(f"  [games] {len(game_data['palavra'])} palavras, {len(game_data['quiz'])} quizzes, {len(game_data['soletra'])} soletras, {len(game_data['timeline'])} timelines")
 
+    sports = fetch_sports()
+    if sports:
+        fb_put(f"{CACHE_BASE}/sports/data", sports)
+        fb_put(f"{CACHE_BASE}/sports/updatedAt", int(time.time() * 1000))
+        print(f"  [sports] {len(sports)} ligas geradas")
+
     app_cache = {
         "river": river or {},
         "weather": weather or {},
         "news": news or [],
-        "events": events or []
+        "events": events or [],
+        "sports": sports or []
     }
     fb_put(f"{CACHE_BASE}/app/data", app_cache)
     fb_put(f"{CACHE_BASE}/app/updatedAt", int(time.time() * 1000))

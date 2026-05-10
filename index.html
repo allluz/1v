@@ -312,11 +312,166 @@
 
 
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 120px;
+        /* ===== DESKTOP SIDEBARS ===== */
+        #sidebar-left, #sidebar-right { display: none; }
+
+        .sidebar-left {
+            position: fixed; top: 0; left: 0;
+            width: 220px; height: 100vh;
+            background: var(--card-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex; flex-direction: column;
+            padding: 20px 0; z-index: 900;
+            overflow-y: auto;
+        }
+        .sidebar-left__brand {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .sidebar-left__logo { width: 32px; height: 32px; border-radius: 50%; }
+        .sidebar-left__title { font-size: 1.1rem; font-weight: 900; color: #fff; }
+        .sidebar-left__title span { color: var(--primary); }
+
+        .sidebar-left__profile {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 20px; cursor: pointer;
+            transition: 0.2s; margin: 8px 0;
+        }
+        .sidebar-left__profile:hover { background: rgba(255,255,255,0.04); }
+        .sidebar-left__avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; overflow: hidden;
+        }
+        .sidebar-left__user {
+            font-size: 0.75rem; font-weight: 800; color: rgba(255,255,255,0.8);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .sidebar-left__nav {
+            flex: 1; display: flex; flex-direction: column;
+            padding: 4px 10px; gap: 2px;
+        }
+        .sidebar-nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: 12px;
+            font-size: 0.75rem; font-weight: 700;
+            color: rgba(255,255,255,0.6); text-decoration: none;
+            transition: 0.2s; cursor: pointer;
+        }
+        .sidebar-nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+        .sidebar-nav-item.active { background: rgba(255,78,0,0.12); color: var(--primary); }
+        .sidebar-nav-item i { width: 18px; flex-shrink: 0; }
+
+        .sidebar-left__sos {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 20px; margin: 8px 10px 4px;
+            border-radius: 12px; cursor: pointer;
+            background: rgba(231,76,60,0.1);
+            border: 1px solid rgba(231,76,60,0.2);
+            color: #e74c3c; font-size: 0.7rem; font-weight: 800;
+            transition: 0.2s;
+        }
+        .sidebar-left__sos:hover { background: rgba(231,76,60,0.2); }
+        .sidebar-left__sos i { width: 16px; }
+
+        /* RIGHT SIDEBAR */
+        .sidebar-right {
+            position: fixed; top: 0; right: 0;
+            width: 260px; height: 100vh;
+            background: var(--card-bg);
+            border-left: 1px solid var(--card-border);
+            display: flex; flex-direction: column;
+            padding: 24px 18px; z-index: 900;
+            overflow-y: auto; gap: 10px;
+        }
+        .sidebar-right__section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 16px;
+        }
+        .sidebar-right__label {
+            font-size: 0.5rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--text-muted); margin-bottom: 8px;
+        }
+        .sidebar-right__weather {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .sidebar-right__river {
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .sidebar-right__links {
+            display: flex; flex-direction: column; gap: 6px;
+            padding: 12px 16px;
+        }
+        .sidebar-right__links a {
+            color: rgba(255,255,255,0.6); text-decoration: none;
+            font-size: 0.7rem; font-weight: 700; padding: 4px 0;
+            transition: 0.2s; cursor: pointer;
+        }
+        .sidebar-right__links a:hover { color: #fff; }
+        .sidebar-right__footer {
+            text-align: center; font-size: 0.55rem;
+            color: rgba(255,255,255,0.2); padding: 16px 0 8px;
+            margin-top: auto; font-weight: 600;
+        }
+
+        /* DESKTOP LAYOUT OVERRIDES */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: none;
+                margin: 0 260px 0 220px;
+                padding: 20px 24px;
+                padding-bottom: 40px;
+            }
+            .bottom-nav { display: none !important; }
+            #sidebar-left { display: flex; }
+            #sidebar-right { display: flex; }
+            body { background: var(--bg-color); }
+            .bg-fixed { display: none; }
+            #mini-player-container {
+                left: calc(220px + (100vw - 220px - 260px) / 2);
+                bottom: 24px;
+                max-width: 500px;
+                width: calc(100vw - 220px - 260px - 40px);
+            }
+        }
+
+        /* TABLET LAYOUT */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .container { max-width: none; margin: 0 0 0 70px; }
+            .bottom-nav { display: none !important; }
+            #sidebar-right { display: none; }
+            #sidebar-left {
+                display: flex; width: 70px;
+                padding: 16px 0; align-items: center;
+            }
+            .sidebar-left__brand { flex-direction: column; padding: 0 8px 16px; gap: 4px; }
+            .sidebar-left__title { display: none; }
+            .sidebar-left__logo { width: 28px; height: 28px; }
+            .sidebar-left__profile { flex-direction: column; padding: 10px 0; }
+            .sidebar-left__user { display: none; }
+            .sidebar-left__nav { align-items: center; padding: 4px 4px; }
+            .sidebar-nav-item {
+                flex-direction: column; gap: 3px; padding: 10px 4px;
+                font-size: 0.5rem; text-align: center;
+            }
+            .sidebar-nav-item i { width: 20px; }
+            .sidebar-nav-item span { display: block; }
+            .sidebar-left__sos {
+                flex-direction: column; gap: 4px; padding: 10px;
+                font-size: 0.5rem; margin: 8px 4px 4px; text-align: center;
+            }
+            .sidebar-left__sos i { width: 18px; }
+            #mini-player-container {
+                left: calc(70px + (100vw - 70px) / 2);
+                max-width: 500px;
+                width: calc(100vw - 70px - 40px);
+            }
         }
 
         header {
@@ -967,22 +1122,35 @@
             border-radius: 14px;
             padding: 8px 0;
             margin-bottom: 16px;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             position: relative;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,78,0,0.3) transparent;
+            cursor: grab;
         }
+        .finance-ticker:active { cursor: grabbing; }
+        .finance-ticker::-webkit-scrollbar { height: 3px; }
+        .finance-ticker::-webkit-scrollbar-thumb { background: rgba(255,78,0,0.3); border-radius: 99px; }
         .finance-ticker-track {
             display: inline-flex;
             gap: 28px;
-            animation: tickerScroll 28s linear infinite;
+            animation: tickerScroll 30s linear infinite;
             width: fit-content;
             padding: 0 10px;
             will-change: transform;
+        }
+        .finance-ticker:hover .finance-ticker-track,
+        .finance-ticker:active .finance-ticker-track {
+            animation-play-state: paused;
         }
         .finance-ticker-item {
             display: flex;
             align-items: center;
             gap: 8px;
             white-space: nowrap;
+            user-select: none;
         }
         .finance-ticker-item .c-label {
             color: var(--text-muted);
@@ -1004,11 +1172,12 @@
         }
         .finance-ticker-item .c-change.pos { color: #28CD41; }
         .finance-ticker-item .c-change.neg { color: #e74c3c; }
-	        .finance-ticker-item .c-divider {
-	            width: 1px;
-	            height: 16px;
-	            background: rgba(255,255,255,0.08);
-	        }
+        .finance-ticker-item .c-divider {
+            width: 1px;
+            height: 16px;
+            background: rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
         .finance-ticker-item .c-change.neu { color: var(--primary); }
 
         @keyframes tickerScroll {
@@ -2511,6 +2680,80 @@
 		    <div class="nav-item" data-view="play" onclick="showView('play', this)"><i data-lucide="play"></i>Play</div>
 		    <div class="nav-item" data-view="news" onclick="showView('news', this)"><i data-lucide="newspaper"></i>News</div>
 		</nav>
+
+		<!-- DESKTOP SIDEBAR LEFT -->
+		<aside id="sidebar-left" class="sidebar-left">
+			<div class="sidebar-left__brand">
+				<img src="https://umvale.wordpress.com/wp-content/uploads/2026/05/23e9addd-68b6-4407-bd96-4b62fd82db94.png?w=196&h=196" alt="1V" class="sidebar-left__logo">
+				<div class="sidebar-left__title">UM <span>Vale</span></div>
+			</div>
+
+			<div class="sidebar-left__profile" id="sidebar-profile-btn" onclick="showView('perfil', this)">
+				<div class="sidebar-left__avatar" id="sidebar-avatar-box">
+					<i data-lucide="user" id="sidebar-user-icon" style="width:18px; opacity:0.7;"></i>
+					<img id="sidebar-user-avatar" src="" alt="" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;">
+				</div>
+				<div class="sidebar-left__user" id="sidebar-user-name">Entrar</div>
+			</div>
+
+			<nav class="sidebar-left__nav" aria-label="Navegação principal">
+				<a class="sidebar-nav-item active" data-view="home" onclick="showView('home', this)">
+					<i data-lucide="house"></i><span>Início</span>
+				</a>
+				<a class="sidebar-nav-item" data-view="agenda" onclick="showView('agenda', this)">
+					<i data-lucide="calendar"></i><span>Onde Ir</span>
+				</a>
+				<a class="sidebar-nav-item" data-view="guia" onclick="showView('guia', this)">
+					<i data-lucide="shopping-bag"></i><span>Guia</span>
+				</a>
+				<a class="sidebar-nav-item" data-view="play" onclick="showView('play', this)">
+					<i data-lucide="play"></i><span>1V PLAY</span>
+				</a>
+				<a class="sidebar-nav-item" data-view="news" onclick="showView('news', this)">
+					<i data-lucide="newspaper"></i><span>News</span>
+				</a>
+			</nav>
+
+			<div class="sidebar-left__sos" onclick="openSosInGuide()">
+				<i data-lucide="shield-alert"></i>
+				<span>SOS Gêmeas</span>
+			</div>
+		</aside>
+
+		<!-- DESKTOP SIDEBAR RIGHT -->
+		<aside id="sidebar-right" class="sidebar-right">
+			<div class="sidebar-right__section">
+				<div class="sidebar-right__label">TEMPO NO VALE</div>
+				<div class="sidebar-right__weather">
+					<span id="sidebar-temp" style="font-size:1.6rem; font-weight:900;">--°C</span>
+					<span id="sidebar-weather-icon" style="font-size:1.4rem;">☀️</span>
+				</div>
+			</div>
+
+			<div class="sidebar-right__section">
+				<div class="sidebar-right__label">RIO IGUAÇU</div>
+				<div class="sidebar-right__river">
+					<span id="sidebar-river" style="font-weight:900;">--</span>
+					<span id="sidebar-river-meta" style="font-size:0.6rem; opacity:0.5;">Nível Copel</span>
+				</div>
+			</div>
+
+			<div class="sidebar-right__section" id="sidebar-agenda-section">
+				<div class="sidebar-right__label">HOJE NO VALE</div>
+				<div id="sidebar-today-events" style="font-size:0.7rem; opacity:0.6; line-height:1.5;">
+					Carregando eventos...
+				</div>
+			</div>
+
+			<div class="sidebar-right__section sidebar-right__links">
+				<a href="#" onclick="showView('guia', document.querySelector('[data-view=guia]'))">📋 Guia Comercial</a>
+				<a href="#" onclick="showView('agenda', document.querySelector('[data-view=agenda]'))">📅 Agenda</a>
+				<a href="#" onclick="showView('news', document.querySelector('[data-view=news]'))">📰 Notícias</a>
+				<a href="https://umvale.wordpress.com" target="_blank">🌐 Portal UM Vale</a>
+			</div>
+
+			<div class="sidebar-right__footer">UM Vale © 2026</div>
+		</aside>
 	<div id="app-toast" class="toast" aria-live="polite"></div>
 	<div id="bookmark-modal" class="bookmark-modal" onclick="closeBookmarkModal(event)">
 	    <div class="bookmark-modal__card">
@@ -2625,6 +2868,7 @@
         } catch(e) { console.warn("FCM não suportado neste navegador."); }
     </script>
 	<script>
+		try { lucide.createIcons(); } catch(e) {}
 		    const ICS_URL = 'https://calendar.google.com/calendar/ical/umvalenews%40gmail.com/private-eee641ec0ceb07e720225f41edb52d91/basic.ics';
 			    const CACHE_KEY = 'umvale_v11_cache';
 		    const NEWS_CACHE_KEY = 'umvale_v11_news';
@@ -3114,6 +3358,125 @@
     let currentFocusedEventKey = '';
     let shouldScrollToFocusedEvent = false;
     
+    /* ===== SPORTS WIDGET ===== */
+    let cachedSports = null;
+
+    const SPORTS_DATA = {
+        brasileirao: {
+            name: 'Brasileirão Série A',
+            icon: '🇧🇷',
+            teams: [
+                { pos:1, name:'Botafogo', pts:79, gp:38, w:23, d:10, l:5, last5:['W','W','W','D','W'] },
+                { pos:2, name:'Palmeiras', pts:73, gp:38, w:22, d:7, l:9, last5:['W','D','W','W','L'] },
+                { pos:3, name:'Flamengo', pts:70, gp:38, w:20, d:10, l:8, last5:['W','W','L','W','D'] },
+                { pos:4, name:'Fortaleza', pts:68, gp:38, w:19, d:11, l:8, last5:['D','W','W','W','D'] },
+                { pos:5, name:'Internacional', pts:65, gp:38, w:18, d:11, l:9, last5:['W','D','L','W','W'] },
+                { pos:6, name:'São Paulo', pts:63, gp:38, w:18, d:9, l:11, last5:['L','W','W','D','L'] },
+                { pos:7, name:'Corinthians', pts:56, gp:38, w:15, d:11, l:12, last5:['W','L','D','W','D'] },
+                { pos:17, name:'Red Bull Bragantino', pts:34, gp:38, w:8, d:10, l:20, last5:['L','L','D','L','W'] },
+                { pos:18, name:'Athletico-PR', pts:31, gp:38, w:7, d:10, l:21, last5:['L','L','L','D','L'] },
+                { pos:19, name:'Cuiabá', pts:30, gp:38, w:7, d:9, l:22, last5:['D','L','L','W','L'] },
+                { pos:20, name:'Atlético-GO', pts:26, gp:38, w:6, d:8, l:24, last5:['L','L','D','L','L'] }
+            ]
+        },
+        paranaense: {
+            name: 'Paranaense',
+            icon: '🟡',
+            teams: [
+                { pos:1, name:'Athletico-PR', pts:28, gp:13, w:9, d:1, l:3, last5:['W','W','W','L','W'] },
+                { pos:2, name:'Operário', pts:23, gp:13, w:6, d:5, l:2, last5:['D','W','D','W','W'] },
+                { pos:3, name:'Maringá', pts:22, gp:13, w:6, d:4, l:3, last5:['W','D','L','W','D'] },
+                { pos:4, name:'Londrina', pts:20, gp:13, w:5, d:5, l:3, last5:['D','W','W','L','D'] },
+                { pos:11, name:'Cascavel', pts:9, gp:13, w:2, d:3, l:8, last5:['L','L','D','L','W'] },
+                { pos:12, name:'Rio Branco', pts:7, gp:13, w:1, d:4, l:8, last5:['L','D','L','L','D'] }
+            ]
+        },
+        catarinense: {
+            name: 'Catarinense',
+            icon: '🟢',
+            teams: [
+                { pos:1, name:'Avaí', pts:27, gp:13, w:8, d:3, l:2, last5:['W','W','D','W','L'] },
+                { pos:2, name:'Criciúma', pts:25, gp:13, w:7, d:4, l:2, last5:['W','D','W','W','D'] },
+                { pos:3, name:'Chapecoense', pts:23, gp:13, w:7, d:2, l:4, last5:['W','W','L','W','D'] },
+                { pos:4, name:'Brusque', pts:20, gp:13, w:5, d:5, l:3, last5:['D','W','L','W','W'] },
+                { pos:11, name:'Hercílio Luz', pts:8, gp:13, w:2, d:2, l:9, last5:['L','D','L','L','W'] },
+                { pos:12, name:'Concórdia', pts:6, gp:13, w:1, d:3, l:9, last5:['L','L','D','L','L'] }
+            ]
+        }
+    };
+
+    function getSportsData() {
+        const cached = window._cachedSportsData;
+        if (cached && Array.isArray(cached)) {
+            const merged = JSON.parse(JSON.stringify(SPORTS_DATA));
+            cached.forEach(entry => {
+                const league = merged[entry.league];
+                if (league && entry.teams) {
+                    entry.teams.forEach(t => {
+                        const idx = league.teams.findIndex(x => x.name === t.name || x.pos === t.pos);
+                        if (idx >= 0) Object.assign(league.teams[idx], t);
+                    });
+                }
+            });
+            return merged;
+        }
+        return SPORTS_DATA;
+    }
+
+    function renderSportsWidget() {
+        const esporteEl = document.getElementById('home-esporte-section');
+        if (!esporteEl) return;
+        // Only render widget if we have some sport data
+        if (!window._cachedSportsData && !Object.values(SPORTS_DATA).some(l => l.teams.length)) return;
+        const data = getSportsData();
+        const leagues = Object.values(data);
+        const activeLeague = window._sportsLeague || 0;
+        const league = leagues[activeLeague];
+
+        let html = `<div style="margin-top:14px; background:var(--card-bg); border:1px solid var(--card-border); border-radius:16px; padding:14px;">`;
+        // League tabs
+        html += `<div style="display:flex; gap:6px; margin-bottom:10px; overflow-x:auto; scrollbar-width:none;">`;
+        leagues.forEach((l, i) => {
+            html += `<button onclick="window._sportsLeague=${i};renderSportsWidget()" style="padding:5px 12px; border-radius:50px; font-size:0.55rem; font-weight:800; white-space:nowrap; cursor:pointer; border:1px solid ${i===activeLeague?'var(--esporte-green)':'rgba(255,255,255,0.1)'}; background:${i===activeLeague?'rgba(40,205,65,0.15)':'transparent'}; color:${i===activeLeague?'var(--esporte-green)':'rgba(255,255,255,0.6)'};">${l.icon} ${l.name}</button>`;
+        });
+        html += `</div>`;
+
+        // Standings table
+        html += `<div style="overflow:hidden;">`;
+        html += `<div style="display:grid; grid-template-columns:28px 1fr 36px 56px; gap:2px; padding:6px 10px; font-size:0.45rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; border-bottom:1px solid var(--card-border);">`;
+        html += `<span>#</span><span>Time</span><span style="text-align:center;">P</span><span style="text-align:right;">Últimos</span></div>`;
+
+        league.teams.forEach(t => {
+            const bg = t.pos <= 4 ? 'rgba(40,205,65,0.04)' : t.pos >= 17 ? 'rgba(231,76,60,0.04)' : 'transparent';
+            html += `<div style="display:grid; grid-template-columns:28px 1fr 36px 56px; gap:2px; padding:6px 10px; align-items:center; font-size:0.65rem; font-weight:700; background:${bg};">`;
+            html += `<span style="opacity:0.4;">${t.pos}</span>`;
+            html += `<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.name}</span>`;
+            html += `<span style="text-align:center; font-weight:900;">${t.pts}</span>`;
+            html += `<span style="text-align:right; display:flex; gap:2px; justify-content:flex-end;">${t.last5.map(r => `<span style="width:14px; height:14px; border-radius:3px; display:inline-flex; align-items:center; justify-content:center; font-size:0.4rem; font-weight:900; background:${r==='W'?'rgba(40,205,65,0.2)':r==='D'?'rgba(255,204,0,0.2)':'rgba(231,76,60,0.2)'}; color:${r==='W'?'#28CD41':r==='D'?'#FFCC00':'#e74c3c'};">${r}</span>`).join('')}</span>`;
+            html += `</div>`;
+        });
+        html += `</div>`;
+        // Legend
+        html += `<div style="display:flex; gap:10px; margin-top:6px; font-size:0.45rem; opacity:0.35; font-weight:700;">`;
+        html += `<span><span style="color:#28CD41;">▓</span> Liberta</span>`;
+        html += `<span><span style="color:#e74c3c;">▓</span> Rebaixamento</span>`;
+        html += `<span style="display:flex; gap:4px;"><span style="color:#28CD41;">V</span> <span style="color:#FFCC00;">E</span> <span style="color:#e74c3c;">D</span></span>`;
+        html += `</div></div>`;
+
+        // Append to esporte section (after the news)
+        const existingContent = esporteEl.querySelector(':scope > :not(.sports-widget)');
+        if (!esporteEl.querySelector('.sports-widget')) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'sports-widget';
+            wrapper.innerHTML = html;
+            esporteEl.appendChild(wrapper);
+        } else {
+            const wrapper = esporteEl.querySelector('.sports-widget');
+            wrapper.innerHTML = html;
+        }
+        try { lucide.createIcons(); } catch(e) {}
+    }
+
     let currentNewsFilter = 'all';
     function renderHomeNews() {
         const radarEl = document.getElementById('home-radar-section');
@@ -3195,8 +3558,6 @@
         if (esporteEvent || esporteFeatured || esporteList.length) {
             esporteHtml += `<div class="home-section-head" data-brand="esporte"><div class="section-title" style="color:var(--esporte-green);">1V Esporte</div><button class="home-link-btn" onclick="setNewsFilter('esporte'); showView('news', document.querySelector('[data-view=news]'))">Ver Mais</button></div>`;
             esporteHtml += renderEventPill(esporteEvent, 'var(--esporte-green)');
-            
-            // Placar Esportivo (Novo Posicionamento entre evento e notícias)
 
             if (esporteFeatured) esporteHtml += renderBigNewsItem(esporteFeatured, 'var(--esporte-green)');
             esporteHtml += esporteList.map(n => renderSmallNewsItem(n, 'var(--esporte-green)')).join('');
@@ -3474,6 +3835,7 @@
             loadWeatherFromFirebaseCache().catch(() => {});
             loadNewsFromFirebaseCache().catch(() => {});
             loadEventsFromFirebaseCache().catch(() => {});
+            loadSportsFromFirebaseCache().catch(() => {});
             loadGameDataFromFirebase().catch(() => {});
             fetchFinanceTicker().catch(e => console.warn('Finance ticker failed:', e));
             fetchRiverData().catch(() => {});
@@ -3658,6 +4020,7 @@
         }
 
         renderHomeNews();
+        try { renderSportsWidget(); } catch(e) {}
         const temp = currentWeather?.temperature_2m;
         const weatherCard = document.getElementById('home-temp-value')?.closest('.stat-card');
         if (weatherCard) {
@@ -3669,6 +4032,26 @@
             }
         }
         tempValueEl.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
+
+        // SIDEBAR RIGHT: update mini widgets
+        const sidebarTemp = document.getElementById('sidebar-temp');
+        const sidebarRiver = document.getElementById('sidebar-river');
+        const sidebarRiverMeta = document.getElementById('sidebar-river-meta');
+        const sidebarWeatherIcon = document.getElementById('sidebar-weather-icon');
+        if (sidebarTemp) sidebarTemp.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
+        if (sidebarWeatherIcon) sidebarWeatherIcon.textContent = currentWeather?.icon || document.getElementById('weather-icon-box')?.textContent?.trim() || '☀️';
+        if (sidebarRiver) sidebarRiver.textContent = currentRiverData?.value || '--';
+        if (sidebarRiverMeta && currentRiverData?.time) sidebarRiverMeta.textContent = `Copel • ${currentRiverData.time}`;
+        // sidebar today events
+        const sidebarToday = document.getElementById('sidebar-today-events');
+        if (sidebarToday) {
+            const today5 = todayEvents.slice(0, 5);
+            if (today5.length) {
+                sidebarToday.innerHTML = today5.map(e => `<div style="margin-bottom:6px; cursor:pointer;" onclick="openAgendaEventByKey('${getEventKey(e)}')"><span style="color:var(--primary);">•</span> ${escapeHtml(e.title)}</div>`).join('');
+            } else {
+                sidebarToday.textContent = 'Nenhum evento hoje';
+            }
+        }
 
         // RIO: Efeito de preenchimento líquido + alerta de seca/enchente
         const riverFill = document.getElementById('river-fill-level');
@@ -5185,6 +5568,20 @@
             avatar.style.display = 'none';
             if (icon) icon.style.display = 'block';
         }
+        // sidebar sync
+        const sidebarIcon = document.getElementById('sidebar-user-icon');
+        const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+        if (sidebarAvatar) {
+            if (src) {
+                sidebarAvatar.src = src;
+                sidebarAvatar.style.display = 'block';
+                if (sidebarIcon) sidebarIcon.style.display = 'none';
+            } else {
+                sidebarAvatar.removeAttribute('src');
+                sidebarAvatar.style.display = 'none';
+                if (sidebarIcon) sidebarIcon.style.display = 'block';
+            }
+        }
     }
 
     async function shareGameResult(title, value, color) {
@@ -5462,9 +5859,10 @@
 	                    }));
 	                }
 	                if (parsed.news && parsed.news.length) newsItems = parsed.news;
-	                if (parsed.weather) currentWeather = parsed.weather;
-	                if (parsed.river) currentRiverData = parsed.river;
-	            } else if (Array.isArray(parsed)) {
+                if (parsed.weather) currentWeather = parsed.weather;
+                if (parsed.river) currentRiverData = parsed.river;
+                if (parsed.sports) window._cachedSportsData = parsed.sports;
+            } else if (Array.isArray(parsed)) {
 	                // Formato antigo: só eventos
 	                allEvents = parsed.map(e => ({
 	                    ...e,
@@ -5499,14 +5897,18 @@
 	                currentWeather = data.weather;
 	                hasData = true;
 	            }
-	            if (data.river && !currentRiverData) {
-	                currentRiverData = data.river;
-	                hasData = true;
-	            }
-	            if (hasData) {
-	                saveToCache();
-	                scheduleRender();
-	            }
+            if (data.river && !currentRiverData) {
+                currentRiverData = data.river;
+                hasData = true;
+            }
+            if (data.sports && Array.isArray(data.sports)) {
+                window._cachedSportsData = data.sports;
+                hasData = true;
+            }
+            if (hasData) {
+                saveToCache();
+                scheduleRender();
+            }
 	        } catch (e) {
 	            console.warn('Firebase cache load failed:', e);
 	        }
@@ -5550,6 +5952,16 @@
 	            }
 	        } catch (e) {}
 	    }
+
+	    async function loadSportsFromFirebaseCache() {
+	        if (window._cachedSportsData) return;
+	        try {
+	            const fb = await firebaseCacheLoad('sports');
+	            if (fb?.data && Array.isArray(fb.data)) {
+	                window._cachedSportsData = fb.data;
+	            }
+	        } catch (e) {}
+	    }
 	
 	    function saveToCache() {
 	        try {
@@ -5558,13 +5970,14 @@
 	                start: new Date(e.start).getTime(),
 	                end: e.end ? new Date(e.end).getTime() : null
 	            }));
-	            const payload = {
-	                events: compact,
-	                news: newsItems,
-	                weather: currentWeather,
-	                river: currentRiverData
-	            };
-	            localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+            const payload = {
+                events: compact,
+                news: newsItems,
+                weather: currentWeather,
+                river: currentRiverData,
+                sports: window._cachedSportsData || null
+            };
+            localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
 	            localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
 	            firebaseCacheSave('app', payload);
 	        } catch (e) {}
@@ -7414,7 +7827,7 @@
                 }
 
 		        if (target) target.classList.add('active');
-		        document.querySelectorAll('.nav-item, .nav-btn').forEach(i => i.classList.remove('active'));
+		        document.querySelectorAll('.nav-item, .nav-btn, .sidebar-nav-item').forEach(i => i.classList.remove('active'));
 		        el?.classList?.add('active');
 		        currentView = viewId;
 		        setHeaderTitle(viewId);
@@ -8042,6 +8455,9 @@
             const avatar = userData?.avatar || user?.photoURL || '';
 
             updateGreeting();
+
+            const sidebarUserName = document.getElementById('sidebar-user-name');
+            if (sidebarUserName) sidebarUserName.textContent = user ? displayName : 'Entrar';
 
             if (!user) {
                 syncProfileTriggerAvatar('');

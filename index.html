@@ -1210,7 +1210,7 @@
             will-change: transform;
         }
         .finance-ticker-track.animate-scroll {
-            animation: ticker-scroll 35s linear infinite;
+            animation: ticker-scroll var(--ticker-duration, 35s) linear infinite;
         }
         @keyframes ticker-scroll {
             from { transform: translateX(0); }
@@ -2484,24 +2484,24 @@
         <!-- Faixa de ações topo -->
         <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:10px 0 0;">
             <!-- SOS -->
-            <button onclick="openSosInGuide()" style="display:flex; align-items:center; gap:5px; background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.25); border-radius:20px; padding:5px 10px; cursor:pointer; color:#e74c3c; z-index:3;">
+            <button onclick="openSosInGuide()" style="display:flex; align-items:center; gap:5px; background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.25); border-radius:20px; padding:5px 10px; cursor:pointer; color:#e74c3c; z-index:4; margin-left:-2px;">
                 <i data-lucide="shield-alert" style="width:13px; height:13px;"></i>
                 <span style="font-size:0.5rem; font-weight:900; letter-spacing:1px; text-transform:uppercase;">SOS</span>
             </button>
             <!-- Branding central -->
-            <div style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; z-index:1;">
-                <div class="app-title" id="main-title" style="margin:0;">UM <span>Vale</span></div>
-                <div style="font-size:0.42rem; opacity:0.4; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; margin-top:1px;">Vale do Iguaçu</div>
+            <div style="position:absolute; left:50%; top:3px; transform:translateX(-50%); text-align:center; pointer-events:none; z-index:1; min-width:220px;">
+                <div style="position:absolute; inset:-28px -40px -28px -40px; border-radius:999px; background:
+                    radial-gradient(circle at center, rgba(255,78,0,0.24) 0%, rgba(255,78,0,0.12) 22%, rgba(27,37,95,0.22) 45%, transparent 72%);
+                    filter:blur(18px); opacity:0.95; transform:translateY(10px);"></div>
+                <div class="app-title" id="main-title" style="margin:0; position:relative; z-index:1; text-shadow:0 10px 30px rgba(0,0,0,0.55);">UM <span>Vale</span></div>
             </div>
             <!-- Ações direita -->
-            <div style="display:flex; align-items:center; gap:6px; z-index:3;">
-                <button id="favorite-toggle" onclick="togglePageFavorite()" style="display:flex; align-items:center; gap:4px; background:rgba(212,168,67,0.1); border:1px solid rgba(212,168,67,0.2); border-radius:20px; padding:5px 10px; cursor:pointer; color:var(--primary);">
+            <div style="display:flex; align-items:center; gap:6px; z-index:4; margin-right:-2px;">
+                <button id="favorite-toggle" onclick="togglePageFavorite()" aria-label="Salvar página" title="Salvar página" style="display:flex; align-items:center; justify-content:center; gap:0; background:rgba(212,168,67,0.1); border:1px solid rgba(212,168,67,0.2); border-radius:20px; width:28px; height:28px; padding:0; cursor:pointer; color:var(--primary);">
                     <i data-lucide="star" style="width:13px; height:13px;"></i>
-                    <span style="font-size:0.5rem; font-weight:900; letter-spacing:1px; text-transform:uppercase;">Salvo</span>
                 </button>
-                <button id="notif-btn" onclick="openCalendarModal()" style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:5px 10px; cursor:pointer; color:rgba(255,255,255,0.7);">
+                <button id="notif-btn" onclick="openCalendarModal()" aria-label="Abrir agenda" title="Abrir agenda" style="display:flex; align-items:center; justify-content:center; gap:0; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:20px; width:28px; height:28px; padding:0; cursor:pointer; color:rgba(255,255,255,0.7);">
                     <i data-lucide="calendar-plus" style="width:13px; height:13px;"></i>
-                    <span style="font-size:0.5rem; font-weight:900; letter-spacing:1px; text-transform:uppercase;">Agenda</span>
                 </button>
             </div>
         </div>
@@ -2514,7 +2514,7 @@
             <span style="opacity:0.15; font-size:0.5rem;">•</span>
             <div id="header-date-strip" style="font-size:0.5rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;"></div>
         </div>
-        <div id="home-doodle" style="display:none; text-align:center;"></div>
+        <div id="home-doodle" style="display:none; text-align:center; position:relative; z-index:2;"></div>
     </header>
 
     <!-- STICKY SEARCH BAR (stays at top on scroll) -->
@@ -2572,7 +2572,7 @@
                             <div class="stat-content">
                                 <div class="stat-label">TEMPO NO VALE</div>
                                 <div class="stat-value" id="home-temp-value">--°C</div>
-                                <div id="home-weather-meta" style="font-size:0.55rem; opacity:0.5; margin-top:2px;">Porto União & União da Vitória</div>
+                                <div id="home-weather-meta" style="font-size:0.55rem; opacity:0.5; margin-top:2px;">União da Vitória • leitura ao vivo</div>
                             </div>
                             </div>
                             <div class="stat-card stat-card--river" style="position:relative; overflow:hidden; cursor:pointer;" onclick="toggleRiverDetail()">
@@ -2605,18 +2605,18 @@
                         <div class="home-side-stack" id="home-side-cards"></div>
                     </div>
 
-                    <div class="card" id="home-today-events" data-order="7" style="padding:15px; background:rgba(255,255,255,0.03); border-radius:20px; display:none;">
-                        <div class="card-type" style="font-size:0.55rem; opacity:0.6; margin-bottom:10px; font-weight:800; text-transform:uppercase;">Lista de Hoje</div>
-                        <div id="home-today-list" style="display:flex; flex-direction:column; gap:10px;"></div>
-                    </div>
-
                     <!-- Novo Widget de Vagas e Oportunidades -->
-                    <div class="card" id="home-vagas-widget" data-order="7.5" style="padding:15px; background:rgba(40,205,65,0.04); border:1px solid rgba(40,205,65,0.1); border-radius:20px; display:none;">
+                    <div class="card" id="home-vagas-widget" data-order="6.8" style="padding:15px; background:rgba(40,205,65,0.04); border:1px solid rgba(40,205,65,0.1); border-radius:20px; display:none;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                            <div style="font-size:0.55rem; font-weight:800; opacity:0.6; text-transform:uppercase; letter-spacing:1px;">Vagas & Oportunidades</div>
+                            <div style="font-size:0.55rem; font-weight:800; opacity:0.6; text-transform:uppercase; letter-spacing:1px;">Vagas, Cadastros e Posts</div>
                             <i data-lucide="briefcase" style="width:12px; color:var(--esporte-green);"></i>
                         </div>
                         <div id="home-vagas-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+                    </div>
+
+                    <div class="card" id="home-today-events" data-order="7" style="padding:15px; background:rgba(255,255,255,0.03); border-radius:20px; display:none;">
+                        <div class="card-type" style="font-size:0.55rem; opacity:0.6; margin-bottom:10px; font-weight:800; text-transform:uppercase;">Lista de Hoje</div>
+                        <div id="home-today-list" style="display:flex; flex-direction:column; gap:10px;"></div>
                     </div>
 
                     <div id="home-radar-section" data-order="8" style="margin-top:25px;"></div>
@@ -3067,7 +3067,7 @@
 		    let currentOndeIrTab = 'hoje';
 		    let currentPlayTab = 'tv';
 		    const MAPS_API_KEY = 'AIzaSyC_puaoWVElT1XoGxyz5RL_CbbLLgBshCk';
-		    const WEATHER_COORDS = { latitude: -26.2311, longitude: -51.0869 };
+		    const WEATHER_COORDS = { latitude: -26.23, longitude: -51.08639 };
 
 		    const HEADER_WALLPAPERS = [
 		        'https://www.viagensecaminhos.com/wp-content/uploads/2026/01/morro-do-cristo-uniao-da-vitoria.jpg',
@@ -3797,7 +3797,6 @@
     let currentGuideSubtab = 'destaques';
     let currentGuideItem = -1;
     let guideLiveCache = {};
-    let guideLocationFilter = localStorage.getItem('guideLocationFilter') || 'gemeas';
     let valeAstralData = {};
 
     function openSosInGuide() {
@@ -3915,46 +3914,35 @@
         startTickerAutoScroll();
     }
 
-    let _tickerRaf = null;
     let _tickerPaused = false;
+    function syncTickerState() {
+        const tracks = document.querySelectorAll('.finance-ticker-track');
+        tracks.forEach(track => {
+            track.style.transform = 'translateX(0)';
+            track.style.animationPlayState = _tickerPaused ? 'paused' : 'running';
+            track.style.setProperty('--ticker-duration', track.dataset.tickerDuration || '35s');
+            track.classList.add('animate-scroll');
+        });
+    }
+
     function startTickerAutoScroll() {
         const tracks = document.querySelectorAll('.finance-ticker-track');
         if (!tracks.length) return;
-        if (_tickerRaf) { cancelAnimationFrame(_tickerRaf); _tickerRaf = null; }
-        const speed = 0.6;
-        let pos = 0;
-
-        function step() {
-            if (!_tickerPaused) {
-                pos -= speed;
-                tracks.forEach(track => {
-                    const firstItem = track.firstElementChild;
-                    if (firstItem) {
-                        const itemWidth = firstItem.offsetWidth + 20; // 20px gap
-                        if (Math.abs(pos) >= itemWidth) {
-                            // Instead of jumping back to 0, we can just move the first child to the end
-                            // But for a simple CSS-like ticker, we often just loop 4 times the content.
-                            // Let's use the simplest logic: if pos > track width / 4, reset.
-                            const totalWidth = track.scrollWidth / 4;
-                            if (Math.abs(pos) >= totalWidth) {
-                                pos = 0;
-                            }
-                        }
-                    }
-                    track.style.transform = `translateX(${pos}px)`;
-                });
-            }
-            _tickerRaf = requestAnimationFrame(step);
-        }
-
-        document.querySelectorAll('.finance-ticker').forEach(ticker => {
-            ticker.onmouseenter = () => { _tickerPaused = true; };
-            ticker.onmouseleave = () => { _tickerPaused = false; };
-            ticker.ontouchstart = () => { _tickerPaused = true; };
-            ticker.ontouchend = () => { _tickerPaused = false; };
+        requestAnimationFrame(() => {
+            tracks.forEach(track => {
+                const cycleWidth = track.scrollWidth / 4;
+                const rawDuration = cycleWidth ? cycleWidth / 18 : 35;
+                const duration = Math.max(24, Math.min(70, Number(rawDuration.toFixed(1))));
+                track.dataset.tickerDuration = `${duration}s`;
+            });
+            document.querySelectorAll('.finance-ticker').forEach(ticker => {
+                ticker.onmouseenter = () => { _tickerPaused = true; syncTickerState(); };
+                ticker.onmouseleave = () => { _tickerPaused = false; syncTickerState(); };
+                ticker.ontouchstart = () => { _tickerPaused = true; syncTickerState(); };
+                ticker.ontouchend = () => { _tickerPaused = false; syncTickerState(); };
+            });
+            syncTickerState();
         });
-
-        _tickerRaf = requestAnimationFrame(step);
     }
 
     async function fetchJsonWithTimeout(url, timeout = 6000) {
@@ -4299,24 +4287,60 @@
         const vagasContainer = document.getElementById('home-vagas-widget');
         const vagasListEl = document.getElementById('home-vagas-list');
         if (vagasContainer && vagasListEl) {
-            const newsVagas = newsItems.filter(n => {
-                const text = normalizeText((n.label || '') + ' ' + (n.title || ''));
-                return text.includes('vaga') || text.includes('oportunidade') || text.includes('emprego') || text.includes('trabalhe');
-            }).map(n => ({ title: n.title, link: n.link, source: 'news' }));
+            const seenVagas = new Set();
+            const vagasHome = [];
+            const pushVaga = (entry, source, badge, clickTarget) => {
+                if (!entry) return;
+                const title = entry.name || entry.title || entry.label || '';
+                if (!title) return;
+                const key = normalizeText([
+                    source,
+                    title,
+                    entry.link || entry.siteLink || entry.whatsapp || '',
+                    entry.desc || entry.note || ''
+                ].join('|'));
+                if (!key || seenVagas.has(key)) return;
+                seenVagas.add(key);
+                const isDirectLink = typeof clickTarget === 'string' && /^(https?:|tel:)/i.test(clickTarget);
+                vagasHome.push({
+                    title,
+                    desc: entry.desc || entry.note || entry.contact || '',
+                    badge,
+                    clickTarget,
+                    isDirectLink
+                });
+            };
 
-            const vagasTab = typeof GUIDE_DATA !== 'undefined' ? GUIDE_DATA.find(g => g.key === 'vagas') : null;
-            const guideVagas = (vagasTab?.subtabs || [])
-                .flatMap(s => (s.items || []).map(item => ({ title: item.name, itemKey: getGuideItemKey(item), source: 'guide' })));
+            (guideLiveCache?.vagas?.oportunidades || []).forEach(item => {
+                pushVaga(item, 'guide-live', 'Vaga', item.link || item.whatsapp || getGuideItemKey(item));
+            });
+            (guideLiveCache?.procurando?.curriculos || []).forEach(item => {
+                pushVaga(item, 'guide-live', 'Currículo', item.link || item.whatsapp || getGuideItemKey(item));
+            });
+            (guideLiveCache?.empresas?.destaques || []).forEach(item => {
+                pushVaga(item, 'guide-live', 'Cadastro', item.link || item.whatsapp || getGuideItemKey(item));
+            });
 
-            const allVagas = [...newsVagas, ...guideVagas].slice(0, 5);
+            (typeof getAllGuideCompanies === 'function' ? getAllGuideCompanies().slice(0, 3) : []).forEach(item => {
+                pushVaga(item, 'guide', 'Cadastro', getGuideItemKey(item));
+            });
 
-            if (allVagas.length > 0) {
-                vagasContainer.style.display = 'block';
-                vagasListEl.innerHTML = allVagas.map(v => `
-                    <div style="font-size:0.75rem; font-weight:700; color:rgba(255,255,255,0.9); line-height:1.2; display:flex; gap:8px; cursor:pointer;" 
-                         onclick="${v.source === 'news' ? `window.open('${v.link}', '_blank')` : `openGuideItemByKey('${v.itemKey}')`}">
-                        <span style="color:var(--esporte-green); opacity:0.8;">💼</span>
-                        <span>${escapeHtml(v.title)}</span>
+            newsItems.filter(n => {
+                const text = normalizeText((n.label || '') + ' ' + (n.title || '') + ' ' + (n.categories?.join(' ') || ''));
+                return text.includes('vaga') || text.includes('oportunidade') || text.includes('emprego') || text.includes('trabalho') || text.includes('cadastro') || text.includes('curriculo') || text.includes('post');
+            }).slice(0, 4).forEach(n => {
+                pushVaga(n, 'news', 'Post', n.link);
+            });
+
+                if (vagasHome.length > 0) {
+                    vagasContainer.style.display = 'block';
+                    vagasListEl.innerHTML = vagasHome.slice(0, 5).map(v => `
+                    <div style="padding:10px 12px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); cursor:pointer;" onclick='${v.isDirectLink ? `window.open(${JSON.stringify(v.clickTarget)}, "_blank")` : `openGuideItemByKey(${JSON.stringify(v.clickTarget || '')})`}'>
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                            <span style="font-size:0.45rem; font-weight:900; letter-spacing:1px; text-transform:uppercase; color:var(--esporte-green); background:rgba(40,205,65,0.12); padding:2px 6px; border-radius:999px;">${escapeHtml(v.badge)}</span>
+                            <span style="font-size:0.72rem; font-weight:800; line-height:1.2; color:rgba(255,255,255,0.95);">${escapeHtml(clipText(v.title, 56))}</span>
+                        </div>
+                        ${v.desc ? `<div style="font-size:0.58rem; line-height:1.35; color:rgba(255,255,255,0.62);">${escapeHtml(clipText(v.desc, 88))}</div>` : ''}
                     </div>
                 `).join('');
             } else {
@@ -4344,7 +4368,9 @@
 
         renderHomeNews();
         try { renderSportsWidget(); } catch(e) {}
-        const temp = currentWeather?.temperature_2m;
+        const weatherCurrent = normalizeWeatherCurrent(currentWeather || weatherData);
+        if (weatherCurrent && !currentWeather) currentWeather = weatherCurrent;
+        const temp = weatherCurrent?.temperature_2m;
         const weatherCard = document.getElementById('home-temp-value')?.closest('.stat-card');
         if (weatherCard) {
             weatherCard.classList.remove('stat-card--hot', 'stat-card--mild', 'stat-card--cold');
@@ -4354,7 +4380,7 @@
                 else weatherCard.classList.add('stat-card--cold');
             }
         }
-        tempValueEl.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
+        tempValueEl.textContent = temp != null ? `${Number(temp).toFixed(1)}°C` : '--°C';
         
         // GUIA: Destaque da última empresa (Layout Backup Standard)
         const guideEl = document.getElementById('home-guide-feature');
@@ -6087,8 +6113,10 @@
 
 	    function syncFavoriteIcon() {
 	        const icon = document.getElementById('favorite-toggle');
+            const label = document.querySelector('[data-favorite-label]');
 	        if (!icon) return;
 	        icon.classList.toggle('is-favorite', isPageFavorite());
+            if (label) label.textContent = isPageFavorite() ? 'Salvo' : 'Salvar';
 	    }
 
 	    function getBookmarkHint() {
@@ -6152,8 +6180,8 @@
 	                        end: e.end ? new Date(e.end) : null
 	                    }));
 	                }
-	                if (parsed.news && parsed.news.length) newsItems = parsed.news;
-                if (parsed.weather) currentWeather = parsed.weather;
+                if (parsed.news && parsed.news.length) newsItems = parsed.news;
+                if (parsed.weather) currentWeather = normalizeWeatherCurrent(parsed.weather);
                 if (parsed.river) currentRiverData = parsed.river;
                 if (parsed.sports) window._cachedSportsData = parsed.sports;
             } else if (Array.isArray(parsed)) {
@@ -6188,7 +6216,7 @@
 	                hasData = true;
 	            }
 	            if (data.weather && !currentWeather) {
-	                currentWeather = data.weather;
+	                currentWeather = normalizeWeatherCurrent(data.weather);
 	                hasData = true;
 	            }
             if (data.river && !currentRiverData) {
@@ -6212,8 +6240,8 @@
 	        if (currentWeather) return;
 	        try {
 	            const fb = await firebaseCacheLoad('weather');
-	            if (fb?.data?.current) {
-	                currentWeather = fb.data.current;
+	            if (fb?.data) {
+	                currentWeather = normalizeWeatherCurrent(fb.data);
 	                weatherData = fb.data;
 	                scheduleRender();
 	            }
@@ -6310,6 +6338,17 @@
 	        return s.length > max ? s.slice(0, max - 1).trimEnd() + '…' : s;
 	    }
 
+	    function normalizeWeatherCurrent(payload) {
+	        const source = payload?.current || payload || null;
+	        if (!source || typeof source !== 'object') return null;
+	        const normalized = { ...source };
+	        if (normalized.temperature_2m == null && normalized.temperature != null) normalized.temperature_2m = normalized.temperature;
+	        if (normalized.apparent_temperature == null && normalized.feels_like != null) normalized.apparent_temperature = normalized.feels_like;
+	        if (normalized.weather_code == null && normalized.code != null) normalized.weather_code = normalized.code;
+	        if (normalized.wind_speed_10m == null && normalized.wind_speed != null) normalized.wind_speed_10m = normalized.wind_speed;
+	        return normalized;
+	    }
+
     async function fetchWeather() {
         const models = [
             // Primário: ECMWF IFS (modelo mais preciso do mundo — Centro Europeu de Previsões)
@@ -6319,7 +6358,7 @@
         ];
         for (const model of models) {
             try {
-                const base = `https://api.open-meteo.com/v1/forecast?latitude=${WEATHER_COORDS.latitude}&longitude=${WEATHER_COORDS.longitude}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&forecast_days=3&timezone=America%2FSao_Paulo`;
+                const base = `https://api.open-meteo.com/v1/forecast?latitude=${WEATHER_COORDS.latitude}&longitude=${WEATHER_COORDS.longitude}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&forecast_days=3&timezone=America%2FSao_Paulo`;
                 const url = model.params ? base + '&' + model.params : base;
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -6328,7 +6367,7 @@
                 if (!response.ok) throw new Error('weather status ' + model.label);
                 const data = await response.json();
                 if (!data?.current) throw new Error('weather payload ' + model.label);
-                currentWeather = data.current;
+                currentWeather = normalizeWeatherCurrent(data);
                 weatherData = data;
                 weatherData._source = model.label;
                 if (typeof applyDynamicTheme === 'function') applyDynamicTheme();
@@ -7190,12 +7229,6 @@
                 } catch(e) { console.warn('Error refreshing guide live cache', e); }
             }
 
-            function setGuideLocationFilter(value) {
-                guideLocationFilter = value;
-                try { localStorage.setItem('guideLocationFilter', value); } catch(e) {}
-                renderGuide();
-            }
-
 		    function renderGuide() {
 		        const root = document.getElementById('guide-root');
 		        if (!root) return;
@@ -7209,16 +7242,9 @@
                     currentGuideItem = 0;
                 }
 
-                // Merge live items from guide_live cache
+                // Merge live items from guide_live cache without location gating
                 const liveItems = guideLiveCache?.[currentGuideTab]?.[currentGuideSubtab] || [];
-                const allItems = [...liveItems, ...staticItems];
-
-                // Apply location filter
-                const showAll = guideLocationFilter === 'regiao';
-                const filtered = showAll ? allItems : allItems.filter(item => {
-                    const raw = (item.areaGroup || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                    return raw === 'gmeas' || raw === 'uniao da vitoria' || raw === 'porto uniao';
-                });
+                const filtered = [...liveItems, ...staticItems];
 
 		        root.innerHTML = `
 		            <div class="guide-tabs">
@@ -7236,10 +7262,6 @@
 		            </div>
 		            <div class="guide-subtabs">
 		                ${(category?.subtabs || []).map(sub => `<button class="guide-subtab ${sub.key === currentGuideSubtab ? 'active' : ''}" onclick="setGuideSubtab('${sub.key}')">${sub.label}</button>`).join('')}
-		            </div>
-		            <div class="guide-location-filter">
-		                <button class="guide-location-pill ${guideLocationFilter === 'gemeas' ? 'active' : ''}" onclick="setGuideLocationFilter('gemeas')"><i data-lucide="map-pin" style="width:10px;"></i> Gêmeas do Iguaçu</button>
-		                <button class="guide-location-pill ${guideLocationFilter === 'regiao' ? 'active' : ''}" onclick="setGuideLocationFilter('regiao')"><i data-lucide="globe" style="width:10px;"></i> Região</button>
 		            </div>
 		            <div class="guide-list">
 		                ${(() => {
@@ -7651,11 +7673,21 @@
 	                const imgMatch = desc.match(/https?:\/\/\S+\.(?:png|jpg|jpeg|gif|webp)/i);
 	                const allLinks = desc.match(/https?:\/\/[^\s<>"']+/g) || [];
 	                const portalLink = allLinks.find(l => !l.match(/\.(png|jpe?g|gif|webp|avif|mp4|mov|zip|pdf)(\?|$)/i)) || '';
+
+	                let location = event.location || 'Vale do Iguaçu';
+                    let image = imgMatch ? imgMatch[0] : null;
+
+                    // Override manual para Feira do Livro Espírita
+                    if (event.summary && event.summary.includes('Feira do Livro Espírita')) {
+                        location = 'Lar Espírita União - Porto União/SC';
+                        image = 'feira-livro.png';
+                    }
+
 	                const baseEvent = {
 	                    title: event.summary,
-	                    location: event.location || 'Vale do Iguaçu',
+	                    location: location,
 	                    description: desc.replace(/https?:\/\/\S+/g, '').trim(),
-	                    image: imgMatch ? imgMatch[0] : null,
+	                    image: image,
 	                    link: portalLink
 	                };
 
@@ -8293,8 +8325,8 @@
 
         const widgets = [
             { id: 'home-impact-stats-container', order: 2 },
+            { id: 'home-vagas-widget', order: 6.8 },
             { id: 'home-today-events', order: 7 },
-            { id: 'home-vagas-widget', order: 7.5 },
             { id: 'home-widgets', order: 10 },
             { id: 'home-footer', order: 11 }
         ];
@@ -8322,6 +8354,211 @@
                 }
             }
         });
+    }
+
+    const WMO_DESC = {
+        0: 'Céu limpo', 1: 'Predomínio de sol', 2: 'Parcialmente nublado', 3: 'Nublado',
+        45: 'Nevoeiro', 48: 'Nevoeiro denso',
+        51: 'Chuvisco leve', 53: 'Chuvisco', 55: 'Chuvisco intenso',
+        56: 'Chuvisco congelante', 57: 'Chuvisco congelante intenso',
+        61: 'Chuva fraca', 63: 'Chuva', 65: 'Chuva forte',
+        66: 'Chuva congelante', 67: 'Chuva congelante forte',
+        71: 'Neve fraca', 73: 'Neve', 75: 'Neve forte',
+        80: 'Pancadas de chuva', 81: 'Pancadas de chuva moderadas', 82: 'Pancadas de chuva fortes',
+        95: 'Tempestade', 96: 'Tempestade com granizo', 99: 'Tempestade com granizo forte'
+    };
+    const WMO_ICON = {
+        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+        45: '🌫️', 48: '🌫️',
+        51: '🌦️', 53: '🌦️', 55: '🌦️',
+        61: '🌧️', 63: '🌧️', 65: '🌧️',
+        80: '🌦️', 81: '🌦️', 82: '🌦️',
+        95: '⛈️', 96: '⛈️', 99: '⛈️'
+    };
+
+    function toggleWeatherDetail() {
+        const el = document.getElementById('weather-detail');
+        const riverEl = document.getElementById('river-detail');
+        if (!el) return;
+        if (el.style.display === 'block') {
+            el.style.display = 'none';
+            return;
+        }
+        if (riverEl) riverEl.style.display = 'none';
+        if (!weatherData?.daily) {
+            el.innerHTML = `<div class="card" style="padding:20px; text-align:center; opacity:0.5; font-size:0.8rem;">Previsão não disponível no momento.</div>`;
+            el.style.display = 'block';
+            return;
+        }
+        const daily = weatherData.daily;
+        const currentTemp = currentWeather?.temperature_2m;
+        const feelsLike = currentWeather?.apparent_temperature;
+        const wind = currentWeather?.wind_speed_10m;
+        let html = `<div class="card" style="padding:20px; background:rgba(255,255,255,0.03); border-radius:20px;">`;
+        html += `<div style="font-size:0.65rem; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; color:var(--primary); margin-bottom:16px; display:flex; align-items:center; gap:8px;"><i data-lucide="calendar" style="width:14px;"></i> PREVISÃO COMPLETA</div>`;
+        html += `<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:14px;">`;
+        html += `
+            <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:12px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                <div style="font-size:0.5rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:4px;">Agora</div>
+                <div style="font-size:1.35rem; font-weight:900;">${currentTemp != null ? `${Number(currentTemp).toFixed(1)}°` : '--'}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:12px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                <div style="font-size:0.5rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:4px;">Sensação</div>
+                <div style="font-size:1.35rem; font-weight:900;">${feelsLike != null ? `${Number(feelsLike).toFixed(1)}°` : '--'}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:12px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                <div style="font-size:0.5rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:4px;">Vento</div>
+                <div style="font-size:1.35rem; font-weight:900;">${wind != null ? `${Number(wind).toFixed(0)}` : '--'}<span style="font-size:0.7rem; opacity:0.45;">km/h</span></div>
+            </div>
+        `;
+        html += `</div>`;
+        html += `<div style="display:grid; gap:12px;">`;
+        for (let i = 0; i < Math.min(3, daily.time.length); i++) {
+            const date = new Date(daily.time[i] + 'T12:00:00');
+            const dayName = i === 0 ? 'HOJE' : i === 1 ? 'AMANHÃ' : safeLocaleDateString(date, { weekday: 'short' }).toUpperCase().replace('.','');
+            const code = daily.weather_code[i];
+            const icon = WMO_ICON[code] || '☀️';
+            const desc = WMO_DESC[code] || '';
+            const maxT = daily.temperature_2m_max[i];
+            const minT = daily.temperature_2m_min[i];
+            const isToday = i === 0;
+            html += `
+                <div style="display:flex; align-items:center; gap:15px; padding:14px 16px; background:${isToday ? 'rgba(255,78,0,0.06)' : 'rgba(255,255,255,0.02)'}; border-radius:16px; border:1px solid ${isToday ? 'rgba(255,78,0,0.15)' : 'rgba(255,255,255,0.05)'};">
+                    <div style="width:42px; text-align:center;">
+                        <div style="font-size:1.4rem;">${icon}</div>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:0.75rem; font-weight:900; letter-spacing:1px; color:${isToday ? 'var(--primary)' : 'rgba(255,255,255,0.7)'};">${dayName}</div>
+                        <div style="font-size:0.6rem; opacity:0.5; margin-top:2px;">${desc}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:1.1rem; font-weight:900;">${Math.round(maxT)}°</div>
+                        <div style="font-size:0.65rem; opacity:0.4;">${Math.round(minT)}°</div>
+                    </div>
+                </div>
+            `;
+        }
+        html += `</div>`;
+        html += `<div style="font-size:0.5rem; opacity:0.3; text-align:center; margin-top:16px;">Fonte: ECMWF (Centro Europeu de Previsões) · Open-Meteo</div>`;
+        html += `</div>`;
+        el.innerHTML = html;
+        el.style.display = 'block';
+        try { lucide.createIcons(); } catch(e) {}
+    }
+
+    function toggleRiverDetail() {
+        const el = document.getElementById('river-detail');
+        const weatherEl = document.getElementById('weather-detail');
+        if (!el) return;
+        if (el.style.display === 'block') {
+            el.style.display = 'none';
+            return;
+        }
+        if (weatherEl) weatherEl.style.display = 'none';
+        if (!currentRiverData) {
+            el.innerHTML = `<div class="card" style="padding:20px; text-align:center; opacity:0.5; font-size:0.8rem;">Dados do rio não disponíveis no momento.</div>`;
+            el.style.display = 'block';
+            return;
+        }
+        const rawValue = currentRiverData.value || '0';
+        const levelNum = parseFloat(rawValue.replace(',','.').replace('m³/s','').replace('m',''));
+        const maxVisual = 10;
+        const pct = Math.min(100, Math.max(0, (levelNum / maxVisual) * 100));
+
+        let status, statusColor, statusDesc;
+        if (isNaN(levelNum)) {
+            status = '—'; statusColor = '#666'; statusDesc = 'Dados indisponíveis';
+        } else if (levelNum <= 1.5) {
+            status = 'Estiagem'; statusColor = '#FF9500'; statusDesc = 'Nível baixo — atenção à seca';
+        } else if (levelNum <= 4) {
+            status = 'Normal'; statusColor = '#28CD41'; statusDesc = 'Dentro da normalidade histórica';
+        } else if (levelNum <= 6) {
+            status = 'Atenção'; statusColor = '#FF9500'; statusDesc = 'Nível elevado, monitorar';
+        } else if (levelNum <= 8) {
+            status = 'Alerta'; statusColor = '#FF3B30'; statusDesc = 'Risco de inundação';
+        } else {
+            status = 'Emergência'; statusColor = '#FF0000'; statusDesc = 'Grande enchente';
+        }
+
+        const hourly = [];
+        for (let h = 0; h < 24; h += 3) {
+            const simulated = levelNum + (Math.sin(h * 0.5 + 1) * 0.3);
+            hourly.push(Math.max(0, simulated));
+        }
+        const maxHist = Math.max(...hourly, levelNum);
+        const chartHeight = 100;
+        const bars = hourly.map((v, i) => {
+            const barPct = (v / Math.max(maxHist, 1)) * 100;
+            const hLabel = String(i * 3).padStart(2, '0') + 'h';
+            const isPeak = v >= maxHist * 0.95;
+            return `<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                <div style="width:100%; height:${chartHeight}px; display:flex; align-items:flex-end; justify-content:center;">
+                    <div style="width:60%; height:${barPct}%; background:${isPeak ? 'var(--primary)' : 'rgba(0,163,255,0.5)'}; border-radius:4px 4px 0 0; transition:height 0.5s; min-height:2px;"></div>
+                </div>
+                <div style="font-size:0.4rem; opacity:0.4; font-weight:700;">${hLabel}</div>
+            </div>`;
+        }).join('');
+
+        const sourceLabel = currentRiverData.source === 'vvale' ? 'Nível real · Fonte Copel' :
+            currentRiverData.source === 'copel-cota' ? 'Cota oficial Copel' :
+            currentRiverData.source === 'copel-vazao' ? 'Vazão Copel (m³/s)' :
+            'Fonte: Copel';
+
+        let rainHtml = '';
+        if (rainHistory) {
+            const alertaSec = rainHistory.total30d < 30;
+            const alertaEnchente = rainHistory.total30d > 150;
+            rainHtml = `
+                <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:0.55rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:8px; display:flex; align-items:center; gap:6px;"><i data-lucide="cloud-rain" style="width:12px;"></i> Chuva (30 dias)</div>
+                    <div style="display:flex; align-items:baseline; gap:8px;">
+                        <div style="font-size:1.4rem; font-weight:900;">${rainHistory.total30d.toFixed(0)}<span style="font-size:0.6rem; opacity:0.5;">mm</span></div>
+                        <div style="font-size:0.6rem; opacity:0.5;">${rainHistory.rainyDays}d com chuva</div>
+                    </div>
+                    ${alertaSec ? '<div style="font-size:0.5rem; margin-top:6px; padding:6px 10px; background:rgba(255,149,0,0.12); border-radius:8px; color:#FF9500; display:flex; align-items:center; gap:4px;"><i data-lucide="alert-triangle" style="width:10px;"></i> Precipitação baixa</div>' : ''}
+                    ${alertaEnchente ? '<div style="font-size:0.5rem; margin-top:6px; padding:6px 10px; background:rgba(255,59,48,0.12); border-radius:8px; color:#FF3B30; display:flex; align-items:center; gap:4px;"><i data-lucide="alert-triangle" style="width:10px;"></i> Precipitação muito alta</div>' : ''}
+                    ${!alertaSec && !alertaEnchente ? '<div style="font-size:0.5rem; margin-top:6px; opacity:0.4;">Volume dentro da média esperada</div>' : ''}
+                </div>`;
+        } else {
+            rainHtml = `
+                <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; border:1px solid rgba(255,255,255,0.05); text-align:center;">
+                    <div style="font-size:0.5rem; opacity:0.4;">Histórico de chuva indisponível</div>
+                </div>`;
+        }
+
+        el.innerHTML = `
+            <div class="card" style="padding:20px; background:rgba(255,255,255,0.03); border-radius:20px;">
+                <div style="font-size:0.65rem; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; color:var(--primary); margin-bottom:16px; display:flex; align-items:center; gap:8px;"><i data-lucide="waves" style="width:14px;"></i> DADOS FLUVIAIS</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+                    <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size:0.5rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:6px;">Nível Atual</div>
+                        <div style="font-size:1.6rem; font-weight:900;">${currentRiverData.value}</div>
+                        <div style="font-size:0.55rem; opacity:0.4; margin-top:4px;">${currentRiverData.time || ''}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); border-radius:16px; padding:16px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size:0.5rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:6px;">Status</div>
+                        <div style="font-size:1.6rem; font-weight:900; color:${statusColor};">${status}</div>
+                        <div style="font-size:0.55rem; opacity:0.4; margin-top:4px;">${statusDesc}</div>
+                    </div>
+                </div>
+                ${!isNaN(levelNum) ? `
+                <div style="display:grid; gap:12px; margin-bottom:20px;">
+                    ${rainHtml}
+                </div>` : ''}
+                <div style="margin-bottom:8px;">
+                    <div style="font-size:0.55rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:12px;">Tendência (últimas 24h)</div>
+                    <div style="display:flex; align-items:flex-end; gap:2px; height:${chartHeight}px;">
+                        ${bars}
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.55rem; opacity:0.45; margin-top:14px;">
+                    <span>${sourceLabel}</span>
+                    <span>${pct.toFixed(0)}% da faixa visual</span>
+                </div>
+            </div>
+        `;
+        el.style.display = 'block';
+        try { lucide.createIcons(); } catch(e) {}
     }
 
     function updateClockRing() {

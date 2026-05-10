@@ -431,13 +431,6 @@
                 transition: background-image 2s ease, opacity 1s;
                 filter: blur(2px);
             }
-            .bg-fixed { display: none; }
-            #mini-player-container {
-                left: calc(220px + (100vw - 220px) / 2);
-                bottom: 24px;
-                max-width: 500px;
-                width: calc(100vw - 220px - 40px);
-            }
             /* 2-col layout nos conteúdos principais */
             #news-feed {
                 display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
@@ -468,19 +461,22 @@
                 padding-right: 4px;
             }
             #sidebar-right::-webkit-scrollbar { display: none; }
-            /* Layout 3-colunas: conteudo principal + sidebar direita */
+
             .desktop-layout-wrapper {
                 display: flex;
                 gap: 24px;
                 align-items: flex-start;
+                width: 100%;
             }
             .desktop-main-col {
                 flex: 1;
                 min-width: 0;
             }
-            /* Ocultar na home os widgets que vão pro sidebar (via JS) */
-            @media (min-width: 1024px) {
-                .widget-in-sidebar { display: none !important; }
+            #mini-player-container {
+                left: calc(220px + (100vw - 220px) / 2);
+                bottom: 24px;
+                max-width: 500px;
+                width: calc(100vw - 220px - 40px);
             }
         }
 
@@ -2486,7 +2482,7 @@
             <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(9,12,26,0.4) 0%, transparent 40%, rgba(9,12,26,0.95) 100%);"></div>
         </div>
         <!-- Faixa de ações topo -->
-        <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:10px 14px 0;">
+        <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:10px 0 0;">
             <!-- SOS -->
             <button onclick="openSosInGuide()" style="display:flex; align-items:center; gap:5px; background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.25); border-radius:20px; padding:5px 10px; cursor:pointer; color:#e74c3c; z-index:3;">
                 <i data-lucide="shield-alert" style="width:13px; height:13px;"></i>
@@ -2564,7 +2560,7 @@
             <section id="view-home" class="view active">
                 <!-- Coluna principal da Home -->
                     <!-- Letreiro financeiro completo na home (restaurado do backup) -->
-                    <div class="finance-ticker" id="homeFinanceTicker" data-order="0" onclick="showView('news', document.querySelector('[data-view=news]'))" style="cursor:pointer; margin-bottom:14px; display:flex; align-items:center;">
+                    <div class="finance-ticker" id="homeFinanceTicker" data-order="0" onclick="showView('news', document.querySelector('[data-view=news]'))" style="cursor:pointer; margin-bottom:14px; display:none; align-items:center;">
                         <span style="background:var(--primary); color:#000; font-size:0.55rem; font-weight:900; padding:2px 8px; border-radius:4px; margin-right:12px; flex-shrink:0; letter-spacing:0.5px;">MERCADOS</span>
                         <div class="finance-ticker-track" style="height:20px; gap:25px; flex:1;"></div>
                     </div>
@@ -2824,7 +2820,6 @@
         </div>
         
         <input type="file" id="avatar-input" style="display:none;" accept="image/*" onchange="handleAvatarChange(event)">
-        </div>
 
 	    </section>
 
@@ -3680,7 +3675,6 @@
                     </button>`).join('')}
             </div>
 
-            <!-- Top 3 compacto -->
             ${top3.map((t, idx) => `
                 <div style="display:flex; align-items:center; gap:10px; padding:5px 0; ${idx < top3.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : ''}">
                     <span style="font-size:0.6rem; font-weight:900; color:var(--esporte-green); width:16px; text-align:center;">${t.pos}</span>
@@ -3689,7 +3683,6 @@
                 </div>`).join('')}
         </div>`;
 
-        // Append ao final da seção (abaixo do destaque de notícias)
         if (!esporteEl.querySelector('.sports-widget')) {
             const wrapper = document.createElement('div');
             wrapper.className = 'sports-widget';
@@ -3709,12 +3702,9 @@
         if (!radarEl || !esporteEl || !pluralEl) return;
 
         const groups = getHomeNewsGroups();
-        const latestNews = groups.spotlight;
-        const radarItems = groups.radar.filter(n => getNewsKey(n) !== getNewsKey(latestNews));
-        const esporteItems = groups.esporte;
-        const pluralItems = groups.plural;
-
         const now = new Date();
+        const renderedLinks = new Set();
+
         const esporteEvent = allEvents.find(e => {
             const title = normalizeText(e.title);
             const desc = normalizeText(e.description);
@@ -3728,6 +3718,8 @@
         });
 
         function renderBigNewsItem(n, colorVar) {
+            if (!n || renderedLinks.has(n.link)) return '';
+            renderedLinks.add(n.link);
             const tone = getNewsBrandTone(n.label || '', n.title || '', n.categories);
             const color = colorVar || (tone === 'esporte' ? 'var(--esporte-green)' : tone === 'plural' ? 'var(--plural-orange)' : 'var(--radar-blue)');
             return `
@@ -3740,6 +3732,8 @@
         }
 
         function renderSmallNewsItem(n, colorVar) {
+            if (!n || renderedLinks.has(n.link)) return '';
+            renderedLinks.add(n.link);
             const tone = getNewsBrandTone(n.label || '', n.title || '', n.categories);
             const color = colorVar || (tone === 'esporte' ? 'var(--esporte-green)' : tone === 'plural' ? 'var(--plural-orange)' : 'var(--radar-blue)');
             return `
@@ -3765,39 +3759,34 @@
         }
 
         // --- Radar Iguaçu ---
-        const radarFeatured = radarItems[0] || null;
-        const radarList = radarItems.slice(1, 3);
         let radarHtml = '';
-        if (radarFeatured || radarList.length) {
+        const radarFiltered = groups.radar.filter(n => !renderedLinks.has(n.link));
+        if (radarFiltered.length) {
             radarHtml += `<div class="home-section-head" data-brand="radar"><div class="section-title" style="color:var(--radar-blue);">Radar Iguaçu</div><button class="home-link-btn" onclick="setNewsFilter('radar'); showView('news', document.querySelector('[data-view=news]'))">Ver Mais</button></div>`;
-            if (radarFeatured) radarHtml += renderBigNewsItem(radarFeatured, 'var(--radar-blue)');
-            radarHtml += radarList.map(n => renderSmallNewsItem(n, 'var(--radar-blue)')).join('');
+            radarHtml += renderBigNewsItem(radarFiltered[0], 'var(--radar-blue)');
+            radarHtml += radarFiltered.slice(1, 4).map(n => renderSmallNewsItem(n, 'var(--radar-blue)')).join('');
         }
-        radarEl.innerHTML = radarHtml;
+        radarEl.innerHTML = radarHtml || '<div style="font-size:0.65rem; opacity:0.3; padding:10px 0;">Nenhuma notícia no Radar no momento.</div>';
 
         // --- 1V Esporte ---
-        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-        const esporteFeatured = esporteItems[0] || null;
-        const esporteList = isDesktop ? esporteItems.slice(1, 6) : esporteItems.slice(1, 3);
         let esporteHtml = '';
-        if (esporteEvent || esporteFeatured || esporteList.length) {
+        const esporteFiltered = groups.esporte.filter(n => !renderedLinks.has(n.link));
+        if (esporteEvent || esporteFiltered.length) {
             esporteHtml += `<div class="home-section-head" data-brand="esporte"><div class="section-title" style="color:var(--esporte-green);">1V Esporte</div><button class="home-link-btn" onclick="setNewsFilter('esporte'); showView('news', document.querySelector('[data-view=news]'))">Ver Mais</button></div>`;
-            esporteHtml += renderEventPill(esporteEvent, 'var(--esporte-green)');
-
-            if (esporteFeatured) esporteHtml += renderBigNewsItem(esporteFeatured, 'var(--esporte-green)');
-            esporteHtml += esporteList.map(n => renderSmallNewsItem(n, 'var(--esporte-green)')).join('');
+            if (esporteEvent) esporteHtml += renderEventPill(esporteEvent, 'var(--esporte-green)');
+            if (esporteFiltered[0]) esporteHtml += renderBigNewsItem(esporteFiltered[0], 'var(--esporte-green)');
+            esporteHtml += esporteFiltered.slice(1, 4).map(n => renderSmallNewsItem(n, 'var(--esporte-green)')).join('');
         }
-        esporteEl.innerHTML = esporteHtml;
+        esporteEl.innerHTML = esporteHtml || '<div style="font-size:0.65rem; opacity:0.3; padding:10px 0;">Nenhuma notícia de esporte no momento.</div>';
 
         // --- Vale Plural ---
-        const pluralFeatured = pluralItems[0] || null;
-        const pluralList = isDesktop ? pluralItems.slice(1, 6) : pluralItems.slice(1, 3);
         let pluralHtml = '';
-        if (pluralEvent || pluralFeatured || pluralList.length) {
+        const pluralFiltered = groups.plural.filter(n => !renderedLinks.has(n.link));
+        if (pluralEvent || pluralFiltered.length) {
             pluralHtml += `<div class="home-section-head" data-brand="plural"><div class="section-title" style="color:var(--plural-orange);">Vale Plural</div><button class="home-link-btn" onclick="setNewsFilter('plural'); showView('news', document.querySelector('[data-view=news]'))">Ver Mais</button></div>`;
-            pluralHtml += renderEventPill(pluralEvent, 'var(--plural-orange)');
-            if (pluralFeatured) pluralHtml += renderBigNewsItem(pluralFeatured, 'var(--plural-orange)');
-            pluralHtml += pluralList.map(n => renderSmallNewsItem(n, 'var(--plural-orange)')).join('');
+            if (pluralEvent) pluralHtml += renderEventPill(pluralEvent, 'var(--plural-orange)');
+            if (pluralFiltered[0]) pluralHtml += renderBigNewsItem(pluralFiltered[0], 'var(--plural-orange)');
+            pluralHtml += pluralFiltered.slice(1, 4).map(n => renderSmallNewsItem(n, 'var(--plural-orange)')).join('');
         }
         pluralEl.innerHTML = pluralHtml || '<div style="font-size:0.65rem; opacity:0.3; padding:10px 0;">Nenhuma notícia cultural no momento.</div>';
 
@@ -8303,7 +8292,6 @@
         if (!sidebar || !mainCol) return;
 
         const widgets = [
-            { id: 'homeFinanceTicker', order: 0 },
             { id: 'home-impact-stats-container', order: 2 },
             { id: 'home-today-events', order: 7 },
             { id: 'home-vagas-widget', order: 7.5 },
@@ -8317,22 +8305,20 @@
             if (isDesktop) {
                 if (el.parentElement !== sidebar) sidebar.appendChild(el);
             } else {
-                if (el.parentElement !== mainCol) {
-                    // Restauração simples por ordem (mainCol tem outros elementos fixos)
-                    const children = Array.from(mainCol.children);
+                const homeSection = document.getElementById('view-home');
+                if (el.parentElement !== homeSection) {
+                    const children = Array.from(homeSection.children);
                     let inserted = false;
                     for (let i = 0; i < children.length; i++) {
                         const child = children[i];
-                        // Se encontrarmos um elemento fixo que deveria vir DEPOIS deste widget
-                        // ou um widget já restaurado que tem ordem maior
                         const childOrder = parseInt(child.getAttribute('data-order') || '999');
                         if (childOrder > w.order) {
-                            mainCol.insertBefore(el, child);
+                            homeSection.insertBefore(el, child);
                             inserted = true;
                             break;
                         }
                     }
-                    if (!inserted) mainCol.appendChild(el);
+                    if (!inserted) homeSection.appendChild(el);
                 }
             }
         });

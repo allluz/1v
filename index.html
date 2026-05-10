@@ -922,45 +922,13 @@
         }
         .header-btn--primary i { color: var(--primary); }
         .header-btn--danger i { color: #e74c3c; }
-        .header-btn--search { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06); }
-        .header-btn--search:hover { background: rgba(255,78,0,0.1); border-color: rgba(255,78,0,0.2); }
-        .header-btn--search:hover i { color: var(--primary); }
 
-        /* STICKY MINI TITLE BAR */
-        #sticky-title-bar {
-            position: sticky; top: 0; z-index: 100;
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 16px;
-            background: rgba(9,12,26,0.92);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            margin: 0 -20px;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translateY(-100%);
+        .header-icon-btn {
+            width: 22px; height: 22px; opacity: 0.85; cursor: pointer;
+            color: var(--text-color); display: flex; align-items: center;
+            justify-content: center; transition: opacity 0.2s ease;
         }
-        body.header-hidden #sticky-title-bar {
-            opacity: 1; pointer-events: auto;
-            transform: translateY(0);
-        }
-        #sticky-title-text {
-            flex: 1; font-size: 0.85rem; font-weight: 900; color: #fff;
-            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
-        .sticky-home-btn, .sticky-search-btn {
-            width: 36px; height: 36px; border-radius: 10px;
-            background: rgba(255,255,255,0.06); border: none;
-            color: rgba(255,255,255,0.6); cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; transition: 0.2s;
-        }
-        .sticky-home-btn:hover, .sticky-search-btn:hover {
-            background: rgba(255,78,0,0.1); color: var(--primary);
-        }
-        body.header-hidden .container { padding-top: 0; }
-        @media (min-width: 1024px) {
-            #sticky-title-bar { margin: 0 -24px; }
-        }
+        .header-icon-btn.is-favorite { color: #FFD166 !important; opacity: 1; }
 
         .header-bar {
             display: flex;
@@ -2410,58 +2378,53 @@
 <div class="bg-fixed"></div>
 
 <div class="container">
-    <!-- SENTINEL for sticky header detection -->
-    <div id="header-sentinel" style="position:absolute; top:0; left:0; width:1px; height:1px; pointer-events:none;"></div>
-
-    <header role="banner" aria-label="UM Vale" class="app-header" id="main-header">
+    <header style="position:relative; overflow:hidden; min-height:100px;">
         <div id="header-wallpaper" style="position:absolute; inset:0; z-index:0; background-size:cover; background-position:center 30%; opacity:0.2; transition:opacity 1s;">
             <div style="position:absolute; inset:0; background:linear-gradient(to top, var(--bg-color) 0%, transparent 50%, var(--bg-color) 100%);"></div>
         </div>
-        <div class="header-bar">
-            <div class="header-bar-left">
-                <button type="button" class="header-btn header-btn--danger" aria-label="Emergência" onclick="openSosInGuide()">
-                    <i data-lucide="shield-alert"></i>
-                </button>
-            </div>
-            <div class="header-bar-center">
-                <div class="app-title" id="main-title">UM <span>Vale</span></div>
-                <div class="online-indicator" style="margin-top:0;">
-                    <span class="dot-live"></span>
-                    <span id="online-now-count">CONECTANDO...</span>
-                </div>
-            </div>
-            <div class="header-bar-right">
-                <button type="button" class="header-btn header-btn--search" aria-label="Pesquisar" onclick="showView('buscar')">
-                    <i data-lucide="search"></i>
-                </button>
-                <button type="button" class="header-btn header-btn--primary" aria-label="Adicionar empresa ou vaga" onclick="handlePlusAction()">
-                    <i data-lucide="plus-circle"></i>
-                </button>
-                <button type="button" class="header-btn" aria-label="Notificações" id="notif-btn" onclick="requestNotificationPermission()">
-                    <i data-lucide="bell"></i>
-                </button>
-                <button type="button" class="header-btn" aria-label="Favoritar" id="favorite-toggle" onclick="togglePageFavorite()">
-                    <i data-lucide="star"></i>
-                </button>
+        <!-- Top-left actions -->
+        <div style="position:absolute; left:16px; top:8px; display:flex; align-items:center; gap:10px; z-index:2;">
+            <i data-lucide="shield-alert" class="header-icon-btn today-pulse" style="color:#e74c3c; width:20px;" onclick="openSosInGuide()"></i>
+            <i data-lucide="plus-circle" class="header-icon-btn" style="color:var(--primary); width:20px;" onclick="handlePlusAction()"></i>
+        </div>
+        <!-- Top-right actions -->
+        <div style="position:absolute; right:16px; top:8px; display:flex; align-items:center; gap:10px; z-index:2;">
+            <i id="favorite-toggle" data-lucide="star" class="header-icon-btn" onclick="togglePageFavorite()" style="width:20px;"></i>
+            <i data-lucide="bell" id="notif-btn" class="header-icon-btn" onclick="requestNotificationPermission()" style="width:20px;"></i>
+        </div>
+        <!-- Center: Home button + Avatar -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin:10px auto 3px;">
+            <i data-lucide="house" class="header-icon-btn" style="color:rgba(255,255,255,0.5); width:20px;" onclick="showView('home', document.querySelector('[data-view=home]'))"></i>
+            <div id="header-profile-btn" onclick="showView('perfil', this)" style="width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.08); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0;">
+                <i data-lucide="user" id="header-user-icon" style="width:18px; opacity:0.7;"></i>
+                <img id="header-user-avatar" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;">
             </div>
         </div>
+        <!-- Title -->
+        <div class="app-title" id="main-title" style="margin:2px 0 1px; font-size:1.2rem; text-align:center; width:100%;">UM <span>Vale</span></div>
+        <div style="font-size:0.45rem; opacity:0.35; font-weight:800; letter-spacing:2px; text-transform:uppercase; text-align:center; width:100%;">A nossa região em um só lugar</div>
+        <div class="online-indicator" style="margin-top:1px;">
+            <span class="dot-live"></span>
+            <span id="online-now-count">CONECTANDO...</span>
+        </div>
         <div id="home-doodle" style="display:none; text-align:center;"></div>
-        <div id="header-date-strip" style="font-size:0.6rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; width:100%; padding:0 12px 4px;"></div>
+        <div id="header-date-strip" style="font-size:0.55rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; width:100%; padding:0 12px 2px;"></div>
     </header>
 
-    <!-- STICKY MINI BAR (appears when header scrolls past) -->
-    <div id="sticky-title-bar">
-        <button type="button" class="sticky-home-btn" aria-label="Início" onclick="showView('home', document.querySelector('[data-view=home]'))">
-            <i data-lucide="chevron-left" style="width:18px;"></i>
-        </button>
-        <span id="sticky-title-text">Início</span>
-        <button type="button" class="sticky-search-btn" aria-label="Pesquisar" onclick="showView('buscar')">
-            <i data-lucide="search" style="width:16px;"></i>
-        </button>
+    <!-- STICKY SEARCH BAR (stays at top on scroll) -->
+    <div id="global-search-container" style="position:sticky; top:0; z-index:50; background:rgba(9,12,26,0.85); backdrop-filter:blur(16px); padding:12px 20px 14px; border-bottom:1px solid rgba(255,255,255,0.05); display:block;">
+        <div id="user-greeting" style="font-size:0.8rem; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:8px; color:#fff;">
+            <span id="greeting-text">Olá! Bem-vindo ao Vale.</span>
+            <span id="greeting-phrase" style="font-size:0.6rem; opacity:0.5; font-weight:600;">O Vale está cheio de vida!</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img id="search-user-avatar" src="" alt="" style="width:36px; height:36px; border-radius:50%; object-fit:cover; display:none; border:2px solid rgba(255,255,255,0.1); flex-shrink:0; cursor:pointer;" onclick="showView('perfil', this)">
+            <div class="search-bar" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:10px 16px; display:flex; align-items:center; gap:10px;">
+                <i data-lucide="search" style="width:16px; opacity:0.5; flex-shrink:0;"></i>
+                <input type="text" placeholder="Pesquisar no Vale..." style="background:transparent; border:none; color:#fff; width:100%; outline:none; font-size:0.8rem;" onfocus="showView('buscar')">
+            </div>
+        </div>
     </div>
-
-    <!-- GREETING (moved to home content, rendered by JS) -->
-    <div id="home-greeting" style="display:none; padding:12px 20px 4px;"></div>
 
 	    <section id="view-home" class="view active">
             <div class="finance-ticker" id="financeTicker">
@@ -3665,8 +3628,6 @@
         function updateGreeting() {
             const now = new Date();
             const hour = now.getHours();
-            const el = document.getElementById('home-greeting');
-            if (!el) return;
 
             let name = 'Visitante';
             if (typeof currentUser !== 'undefined' && currentUser) {
@@ -3687,17 +3648,10 @@
             }
 
             const phrase = phrases[Math.floor(Math.random() * phrases.length)];
-            el.innerHTML = `
-                <div style="font-size:0.85rem; font-weight:900; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <div id="search-profile-btn" onclick="showView('perfil', this)" style="width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.08); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; overflow:hidden;">
-                        <i data-lucide="user" id="search-user-icon" style="width:16px; opacity:0.7;"></i>
-                        <img id="search-user-avatar" src="" alt="" style="width:100%; height:100%; object-fit:cover; display:none;">
-                    </div>
-                    <span style="color:#fff;">${greet}, ${name}!</span>
-                    <span style="font-size:0.7rem; opacity:0.5; font-weight:600;">${phrase}</span>
-                </div>
-            `;
-            try { lucide.createIcons(); } catch(e) {}
+            const gText = document.getElementById('greeting-text');
+            const gPhrase = document.getElementById('greeting-phrase');
+            if (gText) gText.textContent = `${greet}, ${name}!`;
+            if (gPhrase) gPhrase.textContent = phrase;
         }
 
     const FINANCE_CACHE_KEY = 'umvale_finance_ticker_v1';
@@ -3922,17 +3876,6 @@
             hideSplash();
             clearTimeout(safetyTimer);
         }
-
-        // Sticky title bar on scroll (IntersectionObserver)
-        try {
-            const sentinel = document.getElementById('header-sentinel');
-            if (sentinel && 'IntersectionObserver' in window) {
-                const obs = new IntersectionObserver(([entry]) => {
-                    document.body.classList.toggle('header-hidden', !entry.isIntersecting);
-                }, { threshold: 0, rootMargin: '-1px 0px 0px 0px' });
-                obs.observe(sentinel);
-            }
-        } catch(e) { console.warn('Sticky header observer failed', e); }
 
         Promise.all([
             fetchEvents({ background: true }).catch(e => console.warn('Events failed:', e)),
@@ -5692,6 +5635,20 @@
             avatar.removeAttribute('src');
             avatar.style.display = 'none';
             if (icon) icon.style.display = 'block';
+        }
+        // header (old style) avatar sync
+        const hIcon = document.getElementById('header-user-icon');
+        const hAvatar = document.getElementById('header-user-avatar');
+        if (hAvatar) {
+            if (src) {
+                hAvatar.src = src;
+                hAvatar.style.display = 'block';
+                if (hIcon) hIcon.style.display = 'none';
+            } else {
+                hAvatar.removeAttribute('src');
+                hAvatar.style.display = 'none';
+                if (hIcon) hIcon.style.display = 'block';
+            }
         }
         // sidebar sync
         const sidebarIcon = document.getElementById('sidebar-user-icon');
@@ -7922,16 +7879,6 @@
 		        };
 		        titleEl.innerHTML = map[viewId] || map.home;
 
-		        // sync sticky title bar
-		        const stickyTitle = document.getElementById('sticky-title-text');
-		        if (stickyTitle) {
-		            const plain = {
-		                home: 'Início', agenda: 'Onde Ir', news: 'Notícias',
-		                guia: 'Guia', buscar: 'Busca', play: '1V PLAY'
-		            };
-		            stickyTitle.textContent = plain[viewId] || 'UM Vale';
-		        }
-
 		        try {
 		            const titles = {
 		                home: 'UM Vale | A nossa região em um só lugar',
@@ -7967,11 +7914,6 @@
 		        currentView = viewId;
 		        setHeaderTitle(viewId);
 
-                // Show greeting only on home
-                const homeGreeting = document.getElementById('home-greeting');
-                if (homeGreeting) {
-                    homeGreeting.style.display = viewId === 'home' ? 'block' : 'none';
-                }
 		        if (viewId === 'buscar') {
 		            const input = document.getElementById('main-search-input');
 		            if (input) setTimeout(() => input.focus(), 100);

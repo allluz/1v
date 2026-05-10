@@ -439,9 +439,6 @@
                 max-width: 500px;
                 width: calc(100vw - 220px - 260px - 40px);
             }
-            /* No desktop clima/rio estão na sidebar direita — não duplicar */
-            .impact-stats { display: none; }
-            #weather-detail, #river-detail { display: none !important; }
         }
 
         /* TABLET LAYOUT */
@@ -2773,24 +2770,8 @@
 			</div>
 		</aside>
 
-		<!-- DESKTOP SIDEBAR RIGHT -->
+		<!-- DESKTOP SIDEBAR RIGHT (widgets complementares) -->
 		<aside id="sidebar-right" class="sidebar-right">
-			<div class="sidebar-right__section">
-				<div class="sidebar-right__label">TEMPO NO VALE</div>
-				<div class="sidebar-right__weather">
-					<span id="sidebar-temp" style="font-size:1.6rem; font-weight:900;">--°C</span>
-					<span id="sidebar-weather-icon" style="font-size:1.4rem;">☀️</span>
-				</div>
-			</div>
-
-			<div class="sidebar-right__section">
-				<div class="sidebar-right__label">RIO IGUAÇU</div>
-				<div class="sidebar-right__river">
-					<span id="sidebar-river" style="font-weight:900;">--</span>
-					<span id="sidebar-river-meta" style="font-size:0.6rem; opacity:0.5;">Nível Copel</span>
-				</div>
-			</div>
-
 			<div class="sidebar-right__section" id="sidebar-agenda-section">
 				<div class="sidebar-right__label">HOJE NO VALE</div>
 				<div id="sidebar-today-events" style="font-size:0.7rem; opacity:0.6; line-height:1.5;">
@@ -2798,7 +2779,41 @@
 				</div>
 			</div>
 
-			<div class="sidebar-right__section sidebar-right__links">
+			<div id="sidebar-widgets">
+				<div class="sidebar-right__section" id="sidebar-radio-section" style="cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('radio'),50);">
+					<div class="sidebar-right__label"><i data-lucide="radio" style="width:10px; display:inline-block; margin-right:4px;"></i> RÁDIO DO DIA</div>
+					<div id="sidebar-radio-content" style="font-size:0.8rem; font-weight:800;">Carregando...</div>
+				</div>
+
+				<div class="sidebar-right__section" id="sidebar-game-section" style="cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('games'),50);">
+					<div class="sidebar-right__label"><i data-lucide="gamepad-2" style="width:10px; display:inline-block; margin-right:4px;"></i> JOGO DO DIA</div>
+					<div id="sidebar-game-content" style="display:flex; align-items:center; gap:8px;">
+						<span id="sidebar-game-icon" style="font-size:1.4rem;">🎮</span>
+						<div>
+							<div id="sidebar-game-title" style="font-size:0.75rem; font-weight:800;">Carregando...</div>
+							<div id="sidebar-game-desc" style="font-size:0.55rem; opacity:0.5;">Adivinhe palavras regionais</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="sidebar-right__section" id="sidebar-astral-section" style="cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('astral'),50);">
+					<div class="sidebar-right__label"><i data-lucide="sparkles" style="width:10px; display:inline-block; margin-right:4px;"></i> POSIÇÃO ASTRAL</div>
+					<div id="sidebar-astral-content" style="display:flex; gap:8px;">
+						<div id="sidebar-sun" style="flex:1; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px; text-align:center;">
+							<div style="font-size:1rem;">☀️</div>
+							<div style="font-size:0.5rem; font-weight:700; opacity:0.4;">SOL</div>
+							<div id="sidebar-sun-name" style="font-size:0.55rem; font-weight:700;">--</div>
+						</div>
+						<div id="sidebar-moon" style="flex:1; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px; text-align:center;">
+							<div style="font-size:1rem;">🌙</div>
+							<div style="font-size:0.5rem; font-weight:700; opacity:0.4;">LUA</div>
+							<div id="sidebar-moon-name" style="font-size:0.55rem; font-weight:700;">--</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="sidebar-right__section sidebar-right__links" style="margin-top:auto;">
 				<a href="#" onclick="showView('guia', document.querySelector('[data-view=guia]'))">📋 Guia Comercial</a>
 				<a href="#" onclick="showView('agenda', document.querySelector('[data-view=agenda]'))">📅 Agenda</a>
 				<a href="#" onclick="showView('news', document.querySelector('[data-view=news]'))">📰 Notícias</a>
@@ -4085,6 +4100,7 @@
 
         renderHomeNews();
         try { renderSportsWidget(); } catch(e) {}
+        try { renderSidebarRight(); } catch(e) {}
         const temp = currentWeather?.temperature_2m;
         const weatherCard = document.getElementById('home-temp-value')?.closest('.stat-card');
         if (weatherCard) {
@@ -4097,16 +4113,7 @@
         }
         tempValueEl.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
 
-        // SIDEBAR RIGHT: update mini widgets
-        const sidebarTemp = document.getElementById('sidebar-temp');
-        const sidebarRiver = document.getElementById('sidebar-river');
-        const sidebarRiverMeta = document.getElementById('sidebar-river-meta');
-        const sidebarWeatherIcon = document.getElementById('sidebar-weather-icon');
-        if (sidebarTemp) sidebarTemp.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
-        if (sidebarWeatherIcon) sidebarWeatherIcon.textContent = currentWeather?.icon || document.getElementById('weather-icon-box')?.textContent?.trim() || '☀️';
-        if (sidebarRiver) sidebarRiver.textContent = currentRiverData?.value || '--';
-        if (sidebarRiverMeta && currentRiverData?.time) sidebarRiverMeta.textContent = `Copel • ${currentRiverData.time}`;
-        // sidebar today events
+        // SIDEBAR RIGHT: today events
         const sidebarToday = document.getElementById('sidebar-today-events');
         if (sidebarToday) {
             const today5 = todayEvents.slice(0, 5);
@@ -4372,6 +4379,60 @@
         { key: 'soletra', icon: '🐝', title: 'Soletra Iguaçu', desc: 'Forme palavras com as letras disponíveis.' },
         { key: 'timeline', icon: '📅', title: 'Linha do Tempo', desc: 'Ordene fatos históricos do Vale.' }
     ];
+
+    function renderSidebarRight() {
+        const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+        const allRadios = cachedRadios.length ? cachedRadios.flatMap(c => c.items) : MUSIC_RADIOS.flatMap(c => c.items);
+        const radioDoDia = allRadios.length ? allRadios[dayOfYear % allRadios.length] : null;
+        const gameIdx = dayOfYear % GAME_PREVIEWS.length;
+        const game = GAME_PREVIEWS[gameIdx];
+
+        // Radio
+        const radioContent = document.getElementById('sidebar-radio-content');
+        if (radioContent && radioDoDia) radioContent.textContent = `${radioDoDia.icon || '📻'} ${radioDoDia.name}`;
+
+        // Game
+        const gameIcon = document.getElementById('sidebar-game-icon');
+        const gameTitle = document.getElementById('sidebar-game-title');
+        const gameDesc = document.getElementById('sidebar-game-desc');
+        if (gameIcon) gameIcon.textContent = game.icon;
+        if (gameTitle) gameTitle.textContent = game.title;
+        if (gameDesc) gameDesc.textContent = game.desc;
+
+        // Astral
+        const ZODIAC = sidebarZodiac();
+        const refNewMoon = new Date(2025, 2, 29);
+        const daysSince = (new Date() - refNewMoon) / 86400000;
+        const lunarPhase = ((daysSince % 29.53) + 29.53) % 29.53;
+        const moonPhaseName = lunarPhase < 1.8 ? 'Lua Nova' : lunarPhase < 7.4 ? 'Lua Crescente' : lunarPhase < 8.8 ? 'Quarto Crescente' : lunarPhase < 14.8 ? 'Lua Gibosa' : lunarPhase < 16.5 ? 'Lua Cheia' : lunarPhase < 22.1 ? 'Lua Minguante' : lunarPhase < 23.5 ? 'Quarto Minguante' : 'Lua Velha';
+        const moonSignIdx = Math.floor(((daysSince * 13.2 + 45) % 360) / 30);
+        const moonSign = ZODIAC[moonSignIdx % 12];
+        const sunSign = getSunSign(new Date());
+
+        const sunName = document.getElementById('sidebar-sun-name');
+        const moonName = document.getElementById('sidebar-moon-name');
+        if (sunName) sunName.textContent = sunSign.name;
+        if (moonName) moonName.textContent = moonPhaseName;
+    }
+
+    // zodiac helper shared between sidebar and footer
+    const ZODIAC_DEFS = [
+        { name: 'Capricórnio', icon: '♑', start: [12, 22] }, { name: 'Aquário', icon: '♒', start: [1, 20] },
+        { name: 'Peixes', icon: '♓', start: [2, 19] }, { name: 'Áries', icon: '♈', start: [3, 21] },
+        { name: 'Touro', icon: '♉', start: [4, 20] }, { name: 'Gêmeos', icon: '♊', start: [5, 21] },
+        { name: 'Câncer', icon: '♋', start: [6, 21] }, { name: 'Leão', icon: '♌', start: [7, 23] },
+        { name: 'Virgem', icon: '♍', start: [8, 23] }, { name: 'Libra', icon: '♎', start: [9, 23] },
+        { name: 'Escorpião', icon: '♏', start: [10, 23] }, { name: 'Sagitário', icon: '♐', start: [11, 22] }
+    ];
+    function sidebarZodiac() { return ZODIAC_DEFS; }
+    function getSunSign(d) {
+        const m = d.getMonth() + 1, day = d.getDate();
+        for (let i = ZODIAC_DEFS.length - 1; i >= 0; i--) {
+            const [sm, sd] = ZODIAC_DEFS[i].start;
+            if (m > sm || (m === sm && day >= sd)) return ZODIAC_DEFS[i];
+        }
+        return ZODIAC_DEFS[0];
+    }
 
     function renderHomeFooter() {
         const el = document.getElementById('home-footer');

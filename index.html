@@ -94,7 +94,7 @@
             --esporte-green: #28CD41;
             --plural-orange: #FF9500;
 
-            /* Jogos Vale Play */
+            /* 1V PLAY */
             --azul-play: #1B255F;
             --laranja-play: #FF4E00;
             --off-white-play: #F5F2EC;
@@ -1372,7 +1372,7 @@
             display: flex; flex-direction: column; justify-content: flex-end; padding: 25px;
         }
 
-        /* ═══ VALE PLAY PREMIUM DESIGN ═══ */
+        /* ═══ 1V PLAY ═══ */
         :root {
             --p-bg: #090C1A;
             --p-accent: #1B255F;
@@ -2273,6 +2273,17 @@
 	        <div id="weather-detail" style="display:none; margin-bottom:20px;"></div>
 	        <div id="river-detail" style="display:none; margin-bottom:20px;"></div>
 
+            <div class="card" id="home-guide-feature" style="padding:14px 18px; background:rgba(255,78,0,0.06); border:1px solid rgba(255,78,0,0.15); border-radius:18px; text-align:center; margin-bottom:18px; cursor:pointer;" onclick="showView('guia', document.querySelector('[data-view=guia]'))">
+                <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                    <span style="font-size:1.1rem;">📋</span>
+                    <div>
+                        <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--primary);">Guia UM Vale</div>
+                        <div style="font-size:0.55rem; opacity:0.6; margin-top:2px;">Empresas, serviços e oportunidades</div>
+                    </div>
+                    <span style="font-size:1rem; opacity:0.4;">▸</span>
+                </div>
+            </div>
+
 	        <div class="home-grid-two">
 	            <div id="home-spotlight"></div>
 	            <div class="home-side-stack" id="home-side-cards"></div>
@@ -2287,10 +2298,6 @@
 	        <div id="home-esporte-section" style="margin-top:25px;"></div>
 	        <div id="home-plural-section" style="margin-top:25px;"></div>
 
-            <div class="card" id="home-guide-feature" style="padding:20px; border-style:dashed; opacity:0.6; text-align:center;">
-                <div style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Guia UM Vale</div>
-                <div style="font-size:0.65rem; margin-top:5px;">Acesse o mapa completo de serviços.</div>
-            </div>
             <div id="home-widgets"></div>
             <div id="home-footer" style="margin-top:25px;"></div>
 	    </section>
@@ -3321,7 +3328,11 @@
         const ticker = document.getElementById('financeTicker');
         if (!track || !ticker) return;
 
-        const safeItems = Array.isArray(items) && items.length ? items : getFinancePlaceholderItems();
+        let safeItems = Array.isArray(items) && items.length ? items : getFinancePlaceholderItems();
+        // Garante no mínimo 4 itens para o scroll funcionar
+        if (safeItems.length < 4) {
+            safeItems = [...safeItems, ...getFinancePlaceholderItems()].slice(0, 6);
+        }
         const html = safeItems.map(item => `
             <div class="finance-ticker-item">
                 <span class="c-label">${escapeHtml(item.label)}</span>
@@ -3714,19 +3725,34 @@
                 `;
             }
         }
-        // VAGAS + RÁDIO WIDGETS
+        // VAGAS + RÁDIO + 1V PLAY WIDGETS
         const homeWidgets = document.getElementById('home-widgets');
         if (homeWidgets) {
             const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-            // Rádio do dia (determinístico)
+            // Rádio do dia (determinístico, sempre cai em MUSIC_RADIOS se cachedRadios falhar)
             const allRadios = cachedRadios.length ? cachedRadios.flatMap(c => c.items) : MUSIC_RADIOS.flatMap(c => c.items);
-            const radioDoDia = allRadios.length ? allRadios[dayOfYear % allRadios.length] : null;
+            const radioDoDia = allRadios.length ? allRadios[dayOfYear % allRadios.length] : MUSIC_RADIOS.flatMap(c => c.items)[0];
             // Últimas vagas
             const vagasAoVivo = (guideLiveCache?.vagas?.oportunidades || []).slice(0, 3);
             const vagasPortal = newsItems.filter(n => n.label?.toLowerCase() === 'oportunidades').slice(0, 2);
             const vagas = vagasAoVivo.length ? vagasAoVivo : vagasPortal;
 
+            // 1V PLAY: Jogo do dia
+            const gameIdx = dayOfYear % GAME_PREVIEWS.length;
+            const gamePreview = GAME_PREVIEWS[gameIdx];
+
             homeWidgets.innerHTML = `
+                <div class="card" style="padding:16px; border-radius:20px; background:linear-gradient(135deg, rgba(255,78,0,0.15), rgba(27,37,95,0.15)); cursor:pointer; margin-bottom:12px; border:1px solid rgba(255,78,0,0.2);" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('games'),50);">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:44px; height:44px; border-radius:12px; background:var(--primary); display:grid; place-items:center; font-size:1.2rem; font-weight:900; color:#fff; flex-shrink:0;">1V</div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:0.6rem; font-weight:900; text-transform:uppercase; letter-spacing:1.5px; color:var(--primary);">1V PLAY</div>
+                            <div style="font-size:0.75rem; font-weight:700; margin-top:2px; color:#fff;">${gamePreview.icon} ${gamePreview.title}</div>
+                            <div style="font-size:0.55rem; opacity:0.6; margin-top:2px;">${gamePreview.desc}</div>
+                        </div>
+                        <div style="font-size:1.2rem; opacity:0.5;">▸</div>
+                    </div>
+                </div>
                 <div class="home-widgets-grid">
                     ${radioDoDia ? `
                     <div class="card" style="padding:16px; border-radius:20px; background:rgba(255,255,255,0.02); cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('radio'),50);">
@@ -3815,11 +3841,31 @@
         }
     }
 
+    const UNSPLASH_FALLBACKS = [
+        { keywords: ['show', 'festa', 'música', 'show', 'concerto', 'apresentação', 'banda', 'cantor', 'cover'], url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=800' },
+        { keywords: ['esporte', 'futebol', 'corrida', 'esportivo', 'jogo', 'campeonato', 'competição', 'basquete', 'vôlei'], url: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=800' },
+        { keywords: ['cultura', 'teatro', 'arte', 'museu', 'exposição', 'feira', 'artesanato', 'dança', 'cinema'], url: 'https://images.unsplash.com/photo-1504711434969-e33886168d6c?q=80&w=800' },
+        { keywords: ['gastronomia', 'comida', 'feira', 'restaurante', 'culinária', 'cerveja', 'gastronômico'], url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800' },
+        { keywords: ['natureza', 'parque', 'trilha', 'ecologia', 'meio ambiente', 'rio', 'cachoeira', 'campanha'], url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=800' },
+        { keywords: ['saúde', 'bem-estar', 'yoga', 'meditação', 'saude', 'vacina', 'campanha'], url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=800' },
+        { keywords: ['educação', 'curso', 'palestra', 'oficina', 'workshop', 'aula', 'escola', 'universidade'], url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800' },
+        { keywords: ['religião', 'missa', 'igreja', 'fé', 'espiritual', 'culto', 'oração', 'procissão'], url: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800' },
+        { keywords: ['reunião', 'assembleia', 'sessão', 'audiência', 'conselho', 'plenária', 'encontro'], url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=800' },
+        { keywords: ['vagas', 'emprego', 'oportunidade', 'trabalho', 'estágio', 'profissional'], url: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=800' }
+    ];
+    function getUnsplashFallback(text) {
+        const lower = (text || '').toLowerCase();
+        for (const fb of UNSPLASH_FALLBACKS) {
+            if (fb.keywords.some(k => lower.includes(k))) return fb.url;
+        }
+        return 'https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=800';
+    }
     function getEventImage(e) {
         if (e.image) return e.image;
         const desc = e.description || '';
         const imgMatch = desc.match(/<img[^>]+src=["']([^"']+)["']/i) || desc.match(/(https?:\/\/[^\s]+?\.(?:png|jpe?g|gif|webp|avif)(?:\?[^\s]*)?)/i);
-        return imgMatch ? imgMatch[1] : '';
+        if (imgMatch) return imgMatch[1];
+        return getUnsplashFallback(e.title + ' ' + desc);
     }
 
     function renderEventSlide(events) {
@@ -4201,7 +4247,7 @@
         container.innerHTML = `
             <div id="play-games-hub" class="play-hub-container" style="animation:fadeUp 0.6s ease;">
                 <div class="hub-hero-p">
-                    <div class="hub-eyebrow-p">Vale Play · Missão do Dia</div>
+                    <div class="hub-eyebrow-p">1V PLAY · Missão do Dia</div>
                     <h1 class="hub-title-p">Desafio das<br><em>Gêmeas</em></h1>
                     <p class="hub-sub" style="margin-top:14px; opacity:0.7; font-size:0.8rem;">Jogue agora os desafios de hoje. Faça login para salvar e compartilhar seus selos.</p>
                 </div>

@@ -148,6 +148,16 @@
         body.primary-is-light .card__tag,
         body.primary-is-light .badge,
         body.primary-is-light .editorial-pill.active,
+        body.primary-is-light .btn-action i {
+            color: #000000 !important;
+        }
+
+        .hide-desktop { display: block; }
+        .hide-mobile { display: none; }
+        @media (min-width: 1024px) {
+            .hide-desktop { display: none !important; }
+            .hide-mobile { display: block !important; }
+        }
         body.primary-is-light .btn {
             color: #0f0d08 !important;
         }
@@ -2453,7 +2463,7 @@
 <div id="splash-screen" class="splash">
     <div class="splash__content">
         <img src="https://umvale.wordpress.com/wp-content/uploads/2026/05/23e9addd-68b6-4407-bd96-4b62fd82db94.png?w=196&h=196" style="width:80px; height:80px; margin-bottom:15px; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));" alt="1V">
-        <div class="splash__title-app">UM VALE NEWS</div>
+        <div class="splash__title-app">UM Vale</div>
         <div style="font-size:0.6rem; opacity:0.5; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;">A nossa região em um só lugar</div>
         <div id="splash-msg" class="splash__msg">Carregando eventos...</div>
         <style>
@@ -2478,17 +2488,17 @@
         <!-- Faixa de ações topo -->
         <div style="position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:10px 14px 0;">
             <!-- SOS -->
-            <button onclick="openSosInGuide()" style="display:flex; align-items:center; gap:5px; background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.25); border-radius:20px; padding:5px 10px; cursor:pointer; color:#e74c3c;">
+            <button onclick="openSosInGuide()" style="display:flex; align-items:center; gap:5px; background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.25); border-radius:20px; padding:5px 10px; cursor:pointer; color:#e74c3c; z-index:3;">
                 <i data-lucide="shield-alert" style="width:13px; height:13px;"></i>
                 <span style="font-size:0.5rem; font-weight:900; letter-spacing:1px; text-transform:uppercase;">SOS</span>
             </button>
             <!-- Branding central -->
-            <div style="text-align:center; flex:1;">
+            <div style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; pointer-events:none; z-index:1;">
                 <div class="app-title" id="main-title" style="margin:0;">UM <span>Vale</span></div>
                 <div style="font-size:0.42rem; opacity:0.4; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; margin-top:1px;">Vale do Iguaçu</div>
             </div>
             <!-- Ações direita -->
-            <div style="display:flex; align-items:center; gap:6px;">
+            <div style="display:flex; align-items:center; gap:6px; z-index:3;">
                 <button id="favorite-toggle" onclick="togglePageFavorite()" style="display:flex; align-items:center; gap:4px; background:rgba(212,168,67,0.1); border:1px solid rgba(212,168,67,0.2); border-radius:20px; padding:5px 10px; cursor:pointer; color:var(--primary);">
                     <i data-lucide="star" style="width:13px; height:13px;"></i>
                     <span style="font-size:0.5rem; font-weight:900; letter-spacing:1px; text-transform:uppercase;">Salvo</span>
@@ -2512,7 +2522,7 @@
     </header>
 
     <!-- STICKY SEARCH BAR (stays at top on scroll) -->
-    <div id="global-search-container" style="position:sticky; top:0; z-index:50; background:rgba(9,12,26,0.85); backdrop-filter:blur(16px); padding:12px 20px 14px; border-bottom:1px solid rgba(255,255,255,0.05); display:block;">
+    <div id="global-search-container" class="hide-desktop" style="position:sticky; top:0; z-index:50; background:rgba(9,12,26,0.85); backdrop-filter:blur(16px); padding:12px 20px 14px; border-bottom:1px solid rgba(255,255,255,0.05);">
         <div id="user-greeting" style="font-size:0.8rem; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:8px; color:#fff;">
             <span id="greeting-text">Olá! Bem-vindo ao Vale.</span>
             <span id="greeting-phrase" style="font-size:0.6rem; opacity:0.5; font-weight:600;">O Vale está cheio de vida!</span>
@@ -2534,7 +2544,7 @@
     <div class="desktop-layout-wrapper">
         <div class="desktop-main-col">
             <!-- STICKY SEARCH BAR (stays at top on scroll) -->
-            <div id="global-search-container" style="position:sticky; top:0; z-index:50; background:rgba(9,12,26,0.85); backdrop-filter:blur(16px); padding:12px 20px 14px; border-bottom:1px solid rgba(255,255,255,0.05); display:block;">
+            <div id="global-search-container" class="hide-mobile" style="position:sticky; top:0; z-index:50; background:rgba(9,12,26,0.85); backdrop-filter:blur(16px); padding:12px 20px 14px; border-bottom:1px solid rgba(255,255,255,0.05);">
                 <div id="user-greeting" style="font-size:0.8rem; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:8px; color:#fff;">
                     <span id="greeting-text">Olá! Bem-vindo ao Vale.</span>
                     <span id="greeting-phrase" style="font-size:0.6rem; opacity:0.5; font-weight:600;">O Vale está cheio de vida!</span>

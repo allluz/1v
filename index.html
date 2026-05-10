@@ -7583,6 +7583,16 @@
 	                return instances;
             }).sort((a,b) => a.start - b.start);
 
+            // Deduplicar eventos (título + data + local)
+            const eventSeen = new Set();
+            allEvents = allEvents.filter(e => {
+                const t = e.start instanceof Date ? e.start.getTime() : 0;
+                const key = `${e.title}|${t}|${e.location}`;
+                if (eventSeen.has(key)) return false;
+                eventSeen.add(key);
+                return true;
+            });
+
             saveToCache(allEvents);
             renderOndeIr();
             hideSplash();

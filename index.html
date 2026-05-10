@@ -442,7 +442,9 @@
             /* Hide duplicated home widgets on desktop — only sidebar shows them */
             #view-home .impact-stats,
             #view-home #home-widgets,
-            #view-home #home-footer {
+            #view-home #home-footer,
+            #view-home #home-today-events,
+            #view-home #home-guide-feature {
                 display: none;
             }
         }
@@ -514,7 +516,9 @@
             /* Hide duplicated home widgets on wide tablet */
             #view-home .impact-stats,
             #view-home #home-widgets,
-            #view-home #home-footer {
+            #view-home #home-footer,
+            #view-home #home-today-events,
+            #view-home #home-guide-feature {
                 display: none;
             }
         }
@@ -683,9 +687,6 @@
         }
 
         .tabs-container {
-            position: sticky;
-            top: 10px;
-            z-index: 100;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             border-radius: 50px;
@@ -2523,6 +2524,7 @@
 	            <div id="home-today-list" style="display:flex; flex-direction:column; gap:10px;"></div>
 	        </div>
 
+	        <div id="home-placar-preview" style="display:none; margin-bottom:18px;"></div>
 	        <div id="home-radar-section" style="margin-top:25px;"></div>
 	        <div id="home-esporte-section" style="margin-top:25px;"></div>
 	        <div id="home-plural-section" style="margin-top:25px;"></div>
@@ -2782,29 +2784,22 @@
 
 		<!-- DESKTOP SIDEBAR RIGHT (widgets complementares) -->
 		<aside id="sidebar-right" class="sidebar-right">
-			<!-- TEMPO NO VALE -->
-			<div class="sidebar-right__section" id="sidebar-tempo-section" style="cursor:pointer;" onclick="toggleWeatherDetail()">
-				<div class="sidebar-right__label"><i data-lucide="sun" style="width:10px; display:inline-block; margin-right:4px;"></i> TEMPO NO VALE</div>
-				<div class="sidebar-right__weather">
-					<div>
-						<div id="sidebar-temp-value" style="font-size:1.4rem; font-weight:900;">--°C</div>
-						<div id="sidebar-weather-desc" style="font-size:0.5rem; opacity:0.5;">Porto União & União da Vitória</div>
-					</div>
-					<div id="sidebar-weather-icon" style="font-size:1.6rem;">☀️</div>
+			<!-- TEMPO NO VALE (mesmo estilo do impact-stats da home) -->
+			<div class="sidebar-right__section" id="sidebar-tempo-section" style="position:relative; overflow:hidden; cursor:pointer;" onclick="toggleWeatherDetail()">
+				<div id="sidebar-weather-icon" style="position:absolute; top:12px; right:12px; font-size:1.3rem; opacity:0.8;">☀️</div>
+				<div class="stat-content">
+					<div class="stat-label">TEMPO NO VALE</div>
+					<div class="stat-value" id="sidebar-temp-value" style="font-size:1.4rem;">--°C</div>
+					<div id="sidebar-weather-meta" style="font-size:0.5rem; opacity:0.5; margin-top:2px;">Porto União & União da Vitória</div>
 				</div>
 			</div>
 
-			<!-- RIO IGUAÇU -->
-			<div class="sidebar-right__section" id="sidebar-rio-section" style="cursor:pointer;" onclick="toggleRiverDetail()">
-				<div class="sidebar-right__label"><i data-lucide="droplets" style="width:10px; display:inline-block; margin-right:4px;"></i> RIO IGUAÇU</div>
-				<div style="display:flex; justify-content:space-between; align-items:center;">
-					<div>
-						<div id="sidebar-river-value" style="font-size:1.1rem; font-weight:900; font-family:'DM Mono', monospace;">--</div>
-						<div id="sidebar-river-meta" style="font-size:0.45rem; opacity:0.5; margin-top:2px;">Aguardando...</div>
-					</div>
-					<div style="width:30px; height:30px; border-radius:50%; background:rgba(0,163,255,0.15); display:flex; align-items:center; justify-content:center;">
-						<i data-lucide="droplets" style="width:14px; color:var(--radar-blue);"></i>
-					</div>
+			<!-- RIO IGUAÇU (mesmo estilo do impact-stats da home) -->
+			<div class="sidebar-right__section" id="sidebar-rio-section" style="cursor:pointer; position:relative; overflow:hidden;" onclick="toggleRiverDetail()">
+				<div class="stat-content">
+					<div class="stat-label">Rio Iguaçu</div>
+					<div class="stat-value" id="sidebar-river-value" style="font-size:1.4rem; font-family:'DM Mono', monospace;">--</div>
+					<div class="stat-meta" id="sidebar-river-meta" style="font-size:0.5rem; opacity:0.5;">Nível Copel</div>
 				</div>
 			</div>
 
@@ -2846,6 +2841,14 @@
 						<div style="font-size:0.45rem; font-weight:700; opacity:0.4;">LUA</div>
 						<div id="sidebar-moon-name" style="font-size:0.5rem; font-weight:700;">--</div>
 					</div>
+				</div>
+			</div>
+
+			<!-- HOJE NO VALE (eventos do dia) -->
+			<div class="sidebar-right__section" id="sidebar-agenda-section">
+				<div class="sidebar-right__label"><i data-lucide="calendar" style="width:10px; display:inline-block; margin-right:4px;"></i> HOJE NO VALE</div>
+				<div id="sidebar-today-events" style="font-size:0.6rem; opacity:0.7; line-height:1.6;">
+					<span style="opacity:0.4;">Nenhum evento hoje</span>
 				</div>
 			</div>
 
@@ -3575,13 +3578,12 @@
         html += `<span style="display:flex; gap:4px;"><span style="color:#28CD41;">V</span> <span style="color:#FFCC00;">E</span> <span style="color:#e74c3c;">D</span></span>`;
         html += `</div></div>`;
 
-        // Append to esporte section (after the news)
-        const existingContent = esporteEl.querySelector(':scope > :not(.sports-widget)');
+        // Insert at top of esporte section (above news)
         if (!esporteEl.querySelector('.sports-widget')) {
             const wrapper = document.createElement('div');
             wrapper.className = 'sports-widget';
             wrapper.innerHTML = html;
-            esporteEl.appendChild(wrapper);
+            esporteEl.prepend(wrapper);
         } else {
             const wrapper = esporteEl.querySelector('.sports-widget');
             wrapper.innerHTML = html;
@@ -4125,6 +4127,40 @@
         renderHomeNews();
         try { renderSportsWidget(); } catch(e) {}
         try { renderSidebarRight(); } catch(e) {}
+
+        // PLACAR PREVIEW on home (top teams card)
+        const placarPreview = document.getElementById('home-placar-preview');
+        if (placarPreview) {
+            const sportsData = getSportsData();
+            const leagues = Object.values(sportsData);
+            const activeLeague = window._sportsLeague || 0;
+            const league = leagues[activeLeague];
+            if (league && league.teams.length) {
+                const top = league.teams.slice(0, 3);
+                placarPreview.style.display = 'block';
+                placarPreview.innerHTML = `
+                    <div class="card" style="padding:14px 16px; border-radius:18px; background:rgba(40,205,65,0.04); border:1px solid rgba(40,205,65,0.12); cursor:pointer;" onclick="document.getElementById('home-esporte-section').scrollIntoView({behavior:'smooth', block:'start'})">
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <div style="font-size:0.5rem; font-weight:900; text-transform:uppercase; letter-spacing:1px; color:var(--esporte-green); display:flex; align-items:center; gap:6px;">
+                                <i data-lucide="trophy" style="width:12px;"></i> PLACAR • ${league.icon} ${league.name}
+                            </div>
+                            <span style="font-size:0.5rem; opacity:0.4; font-weight:800;">VER MAIS ▸</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px;">
+                            ${top.map(t => `
+                                <div style="text-align:center; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px 4px;">
+                                    <div style="font-size:0.4rem; opacity:0.4; font-weight:800;">#${t.pos}</div>
+                                    <div style="font-size:0.6rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.name}</div>
+                                    <div style="font-size:0.7rem; font-weight:900; color:var(--esporte-green);">${t.pts}p</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                placarPreview.style.display = 'none';
+            }
+        }
         const temp = currentWeather?.temperature_2m;
         const weatherCard = document.getElementById('home-temp-value')?.closest('.stat-card');
         if (weatherCard) {
@@ -4396,10 +4432,10 @@
     function renderSidebarRight() {
         const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
 
-        // 1. TEMPO
+        // 1. TEMPO (mesmo estilo do impact-stats home)
         const tempEl = document.getElementById('sidebar-temp-value');
         const weatherIconEl = document.getElementById('sidebar-weather-icon');
-        const weatherDescEl = document.getElementById('sidebar-weather-desc');
+        const weatherMetaEl = document.getElementById('sidebar-weather-meta');
         if (tempEl) {
             const temp = currentWeather?.temperature_2m;
             tempEl.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
@@ -4410,9 +4446,9 @@
             const icons = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 51: '🌦️', 61: '🌧️', 80: '🌦️', 95: '⛈️' };
             weatherIconEl.textContent = icons[code] || (hour >= 19 || hour < 6 ? '🌙' : '☀️');
         }
-        if (weatherDescEl && currentWeather) {
+        if (weatherMetaEl && currentWeather) {
             const wind = currentWeather.wind_speed_10m;
-            weatherDescEl.textContent = wind != null ? `Vento ${Math.round(wind)}km/h` : 'Porto União & União da Vitória';
+            weatherMetaEl.textContent = wind != null ? `Vento ${Math.round(wind)}km/h · Porto União` : 'Porto União & União da Vitória';
         }
 
         // 2. RIO
@@ -4496,6 +4532,20 @@
                 vagasContent.innerHTML = vagas.map(v => `<div style="font-size:0.55rem; font-weight:700; line-height:1.2; color:rgba(255,255,255,0.9); margin-bottom:3px; display:flex; gap:4px; align-items:start;"><span style="color:#25D366; flex-shrink:0;">▸</span><span>${escapeHtml(v.name || v.title || '')}</span></div>`).join('');
             } else {
                 vagasContent.innerHTML = '<div style="font-size:0.55rem; opacity:0.4;">Nenhuma vaga no momento</div>';
+            }
+        }
+
+        // 8. HOJE NO VALE (today events)
+        const sidebarToday = document.getElementById('sidebar-today-events');
+        if (sidebarToday) {
+            const todayEvents = allEvents.filter(e => {
+                const start = new Date(e.start);
+                return new Date(start).setHours(0,0,0,0) === new Date().setHours(0,0,0,0);
+            }).slice(0, 5);
+            if (todayEvents.length) {
+                sidebarToday.innerHTML = todayEvents.map(e =>
+                    `<div style="margin-bottom:4px; cursor:pointer; display:flex; gap:6px; align-items:start;" onclick="openAgendaEventByKey('${getEventKey(e)}')"><span style="color:var(--primary); flex-shrink:0;">•</span><span>${escapeHtml(e.title)}</span></div>`
+                ).join('');
             }
         }
 
@@ -6882,6 +6932,11 @@
                 const imgMatch = description.match(/<img[^>]+src=["']([^"']+)["']/i) || description.match(/(https?:\/\/[^\s]+?\.(?:png|jpe?g|gif|webp|avif)(?:\?[^\s]*)?)/i);
                 if (imgMatch) eventImage = imgMatch[1];
             }
+            // Fallback: Picsum determinístico baseado no título do evento
+            if (!eventImage) {
+                const seed = encodeURIComponent((e.title || 'event').replace(/[^a-zA-Z0-9]/g, '').slice(0, 20) || 'event');
+                eventImage = `https://picsum.photos/seed/${seed}/400/200`;
+            }
 
             // Extract portal link from description if not already set
             if (!portalLink) {
@@ -8019,7 +8074,7 @@
 		            news: 'UM <span>News</span>',
 		            guia: 'Guia <span>Vale</span>',
 		            buscar: 'Buscar <span>Vale</span>',
-		            play: 'UM <span>Play</span>'
+		            play: '1V <span>PLAY</span>'
 		        };
 		        titleEl.innerHTML = map[viewId] || map.home;
 
@@ -8030,7 +8085,7 @@
 		                news: 'Notícias | UM Vale',
 		                guia: 'Guia | UM Vale',
 		                buscar: 'Buscar | UM Vale',
-		                play: 'UM Play | UM Vale'
+		                play: '1V PLAY | UM Vale'
 		            };
 		            document.title = titles[viewId] || titles.home;
 		        } catch {}

@@ -76,20 +76,47 @@ def fetch_river():
         clean = clean.replace('&nbsp;', ' ').replace('\xa0', ' ')
         clean = re.sub(r'\s+', ' ', clean).strip()
 
-        # "Com chuva" columns: Leitura da régua / Nível / Vazão
-        data_row = re.search(
-            r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)'
-            r'\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)',
-            clean
-        )
-        if data_row:
+        patterns = [
+            # Padrão "Com chuva" (7 colunas): data/régua/nível/vazão/chuva
+            r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)',
+            # Padrão "Sem chuva" (4 colunas): data/régua/nível/vazão
+            r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)',
+            # Padrão genérico: qualquer linha com data e 3+ números
+            r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)\s+',
+            # Fallback: último valor considerado + leitura da régua
+            r'[Uu]ltimo\s*[Vv]alor\s*[Cc]onsiderado:?\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}).*?(\d+[.,]\d+)\s+m',
+        ]
+
+        for pat in patterns:
+            m = re.search(pat, clean)
+            if m:
+                groups = m.groups()
+                if len(groups) >= 4:
+                    return {
+                        "value": f"{m.group(2)}m",
+                        "time": f"Copel • {m.group(1)}",
+                        "source": "copel-cota",
+                        "waterLevel": f"{m.group(3)}m",
+                        "flow": f"{m.group(4)} m³/s"
+                    }
+                elif len(groups) >= 2:
+                    return {
+                        "value": f"{m.group(2)}m",
+                        "time": f"Copel • {m.group(1)}",
+                        "source": "copel-cota",
+                    }
+
+        # Se nada funcionou, tenta extrair qualquer número com data próxima
+        any_date = re.search(r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})', clean)
+        any_value = re.search(r'([\d,]+[.,]\d+)\s*m', clean)
+        if any_date and any_value:
             return {
-                "value": f"{data_row.group(2)}m",
-                "time": f"Copel • {data_row.group(1)}",
+                "value": f"{any_value.group(1).replace(',', '.')}m",
+                "time": f"Copel • {any_date.group(1)}",
                 "source": "copel-cota",
-                "waterLevel": f"{data_row.group(3)}m",
-                "flow": f"{data_row.group(4)} m³/s"
             }
+
+        print("[river] Nenhum padrão encontrado na página Copel")
         return None
     except Exception as e:
         print(f"[river] erro: {e}")

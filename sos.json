@@ -1,0 +1,147 @@
+[
+  {
+    "key": "emergencia",
+    "label": "🚨 Emergência",
+    "subtabs": [
+      {
+        "key": "gemeas",
+        "label": "Gêmeas do Iguaçu",
+        "items": [
+          {
+            "kind": "emergencia",
+            "areaGroup": "Gêmeas",
+            "name": "Bombeiros (193)",
+            "desc": "União da Vitória & Porto União",
+            "score": "🚨 193",
+            "hours": "Atendimento 24h",
+            "contact": "193",
+            "address": "UVA: R. Mal. Floriano Peixoto, 244 | PU: Av. João Pessoa, 1270",
+            "whatsapp": "tel:193",
+            "note": "Emergências, incêndios e resgates. Unidade UVA no Bairro Navegantes e Unidade PU no Centro (Av. João Pessoa).",
+            "tags": "Emergência • 24h",
+            "image": "https://vvale.com.br/wp-content/uploads/2021/04/Cobranca-de-taxas-dos-Bombeiros-e-suspensa-pelo-STF-V-Vale.jpg",
+            "coords": { "lat": -26.2283195, "lng": -51.0830503 }
+          },
+          {
+            "kind": "emergencia",
+            "areaGroup": "Gêmeas",
+            "name": "Polícia Militar (190)",
+            "desc": "Gêmeas do Iguaçu (PR/SC)",
+            "score": "👮 190",
+            "hours": "Atendimento 24h",
+            "contact": "190",
+            "address": "27º BPM: R. Alexandre Schlemm, 101 | 3º BPM (PU): Centro",
+            "whatsapp": "tel:190",
+            "note": "Segurança pública e ocorrências policiais em Porto União e União da Vitória.",
+            "tags": "Polícia • 24h",
+            "image": "https://vvale.com.br/wp-content/uploads/2018/11/Pol%C3%ADcia-Militar.jpg",
+            "coords": { "lat": -26.2295668, "lng": -51.0886638 }
+          },
+          {
+            "kind": "emergencia",
+            "areaGroup": "Gêmeas",
+            "name": "SAMU (192)",
+            "desc": "Gêmeas do Iguaçu",
+            "score": "🚑 192",
+            "hours": "Atendimento 24h",
+            "contact": "192",
+            "address": "UVA: R. Dário Antônio Bordin, 132 (Navegantes) | Base PU",
+            "whatsapp": "tel:192",
+            "note": "Nova base própria em União da Vitória (prédio da antiga rodoviária), anexa aos Bombeiros. Inaugurada em 24/04/2026 com estrutura moderna.",
+            "tags": "Saúde • 24h",
+            "image": "https://vvale.com.br/wp-content/uploads/2021/03/Samu.jpg",
+            "coords": { "lat": -26.2274226, "lng": -51.0822603 }
+          },
+          {
+            "kind": "emergencia",
+            "areaGroup": "União da Vitória",
+            "name": "Hospital Regional",
+            "desc": "União da Vitória",
+            "score": "🏥 Saúde",
+            "hours": "Pronto Socorro 24h",
+            "contact": "(42) 3521-1200",
+            "address": "Rua Coronel Amazonas, 521 - Centro",
+            "whatsapp": "tel:4235211200",
+            "note": "Referência em atendimento hospitalar em União da Vitória, localizado próximo à prefeitura.",
+            "tags": "Hospital • UVA",
+            "image": "https://vvale.com.br/wp-content/uploads/2021/03/Hospital-Regional.jpg",
+            "coords": { "lat": -26.2235896, "lng": -51.0837827 }
+          },
+          {
+            "kind": "emergencia",
+            "areaGroup": "Porto União",
+            "name": "Hospital São Braz",
+            "desc": "Porto União",
+            "score": "🏥 Saúde",
+            "hours": "Pronto Socorro 24h",
+            "contact": "(42) 3522-1144",
+            "address": "Rua Prudente de Moraes, 305 - Centro",
+            "whatsapp": "tel:4235221144",
+            "note": "Referência em atendimento hospitalar em Porto União.",
+            "tags": "Hospital • PU",
+            "image": "https://vvale.com.br/wp-content/uploads/2020/06/Hospital-São-Braz.jpg",
+            "coords": { "lat": -26.2318031, "lng": -51.0832127 }
+          },
+          {
+            "kind": "emergencia",
+            "areaGroup": "União da Vitória",
+            "name": "UPA 24h",
+            "desc": "União da Vitória",
+            "score": "🏥 Saúde",
+            "hours": "24 horas",
+            "contact": "(42) 3524-2114",
+            "address": "Rua Coronel Amazonas, 521 (Anexo ao Regional)",
+            "whatsapp": "tel:4235242114",
+            "note": "Unidade de Pronto Atendimento em União da Vitória.",
+            "tags": "Saúde • UVA"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "classicos",
+    "label": "Clássicos",
+    "subtabs": [
+      {
+        "key": "historia",
+        "label": "História",
+        "items": [
+          {
+            "kind": "lugar",
+            "name": "Museu do Contestado",
+            "desc": "Preservação da história da Guerra do Contestado.",
+            "score": "Histórico",
+            "address": "Avenida João Pessoa, 103 - Centro (PU)",
+            "note": "Fundamental para entender a identidade local e os conflitos de terra.",
+            "tags": "Museu • Cultura"
+          },
+          {
+            "kind": "lugar",
+            "name": "Estação União",
+            "desc": "Marco arquitetônico que divide UVA e PU.",
+            "score": "Ícone",
+            "address": "Praça da Divisa / Av. Getúlio Vargas",
+            "note": "Simboliza a união das cidades gêmeas.",
+            "tags": "Ferrovia • Divisa"
+          }
+        ]
+      },
+      {
+        "key": "apoio",
+        "label": "Apoio Social",
+        "items": [
+          {
+            "kind": "ong",
+            "name": "Casa Bebel (RFCC)",
+            "desc": "Rede Feminina de Combate ao Câncer.",
+            "score": "ONG",
+            "address": "Rua Coronel João Gualberto, 300 - Centro (UVA)",
+            "note": "Apoio vital a pacientes oncológicos há mais de 60 anos.",
+            "tags": "Saúde • Solidariedade"
+          }
+        ]
+      }
+    ]
+  }
+]

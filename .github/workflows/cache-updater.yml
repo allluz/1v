@@ -1,0 +1,27 @@
+name: Cache Updater
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Instalar dependências
+        run: pip install firebase-admin requests
+
+      - name: Decodificar service account key
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" | base64 --decode > serviceAccountKey.json
+
+      - name: Rodar cache updater
+        run: python firebase_cache_updater.py

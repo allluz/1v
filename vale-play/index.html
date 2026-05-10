@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#090C1A" />
+    <title>Netfly • Vale Play</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Hanken+Grotesk:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <span class="brand__pill">1V</span>
+          <div class="brand__title">
+            <div class="brand__name"><b>UM</b> Vale App</div>
+            <div class="brand__sub">A nossa região em um só lugar</div>
+          </div>
+        </div>
+        <div class="header__right">
+          <button class="btn btn--ghost" id="btnProfile" type="button" aria-label="Abrir perfil">
+            Perfil
+          </button>
+        </div>
+      </header>
+
+      <main class="main">
+        <!-- HOME -->
+        <section class="view view--active" id="viewHome" aria-label="Início">
+          <div class="hero">
+            <div class="hero__kicker" id="todayHeaderHighlight">Destaque de Hoje</div>
+            <h1 class="hero__title">Informação e Entretenimento.</h1>
+            <p class="hero__desc">
+              Tudo o que acontece no Vale do Iguaçu, organizado para você.
+            </p>
+          </div>
+
+          <div class="editorial-menu">
+            <button class="editorial-pill active">Radar</button>
+            <button class="editorial-pill">Política</button>
+            <button class="editorial-pill">Saúde</button>
+            <button class="editorial-pill">Emergência</button>
+            <button class="editorial-pill">Tempo</button>
+            <button class="editorial-pill">Vagas</button>
+          </div>
+
+          <div class="section-title">Notícias Radar Iguaçu</div>
+          <div class="trilho" id="trilhoRadar">
+            <!-- Dynamic Content -->
+            <div class="trilho-card">
+              <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=80" alt="Noticia">
+              <div class="trilho-card__info">
+                <div class="card__tag">Destaque</div>
+                <div class="card__title" style="font-size: 1rem; margin-top: 5px;">Radar Iguaçu: As principais do dia</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">1V Esporte</div>
+          <div class="trilho" id="trilhoEsporte">
+            <div class="trilho-card">
+              <img src="https://images.unsplash.com/photo-1461896704690-464a71dd5988?auto=format&fit=crop&w=400&q=80" alt="Esporte">
+              <div class="trilho-card__info">
+                <div class="card__tag">Esporte</div>
+                <div class="card__title" style="font-size: 1rem; margin-top: 5px;">Placar do fim de semana</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">Jogos Vale Play</div>
+
+          <div class="grid">
+            <button class="card" data-nav="#dito" type="button">
+              <div class="card__top">
+                <span class="card__tag">Palavra do dia</span>
+                <span class="card__meta" id="metaDito"></span>
+              </div>
+              <div class="card__title">Dito do Vale</div>
+              <div class="card__desc">Adivinhe a palavra local em 6 tentativas.</div>
+            </button>
+
+            <button class="card" data-nav="#combinado" type="button">
+              <div class="card__top">
+                <span class="card__tag">Conexões</span>
+                <span class="card__meta" id="metaCombinado"></span>
+              </div>
+              <div class="card__title">Combinado</div>
+              <div class="card__desc">Separe 16 palavras em 4 grupos.</div>
+            </button>
+
+            <button class="card" data-nav="#soletra" type="button">
+              <div class="card__top">
+                <span class="card__tag">Letras</span>
+                <span class="card__meta" id="metaSoletra"></span>
+              </div>
+              <div class="card__title">Soletra</div>
+              <div class="card__desc">Forme palavras com 7 letras do dia.</div>
+            </button>
+
+            <button class="card" data-nav="#quandofoi" type="button">
+              <div class="card__top">
+                <span class="card__tag">Quiz</span>
+                <span class="card__meta" id="metaQuandoFoi"></span>
+              </div>
+              <div class="card__title">Quando foi?</div>
+              <div class="card__desc">Adivinhe quando aconteceu no Vale.</div>
+            </button>
+
+            <button class="card" data-nav="#voucher" type="button">
+              <div class="card__top">
+                <span class="card__tag">Utilidade</span>
+                <span class="card__meta">Criar Agora</span>
+              </div>
+              <div class="card__title">Vale Atuante</div>
+              <div class="card__desc">Crie vouchers e agende no seu calendário.</div>
+            </button>
+
+            <button class="card" data-nav="#copywriter" type="button">
+              <div class="card__top">
+                <span class="card__tag">Editor</span>
+                <span class="card__meta">Nova Matéria</span>
+              </div>
+              <div class="card__title">Copywriter 1V</div>
+              <div class="card__desc">Redija matérias com Brand Voice e agende coberturas.</div>
+            </button>
+          </div>
+
+          <div class="section-title">1V Series</div>
+          <div class="trilho" id="trilhoSeries">
+            <div class="trilho-card">
+              <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&q=80" alt="Series">
+              <div class="trilho-card__info">
+                <div class="card__tag">1V Series</div>
+                <div class="card__title" style="font-size: 1rem; margin-top: 5px;">Histórias do Vale</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">Arquivo Vivo</div>
+          <div class="trilho" id="trilhoArquivo">
+            <div class="trilho-card">
+              <img src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=400&q=80" alt="Arquivo">
+              <div class="trilho-card__info">
+                <div class="card__tag">Arquivo Vivo</div>
+                <div class="card__title" style="font-size: 1rem; margin-top: 5px;">Memórias da Região</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer">
+            <div class="footer__left">
+              <div class="stat">
+                <div class="stat__label">Hoje</div>
+                <div class="stat__value" id="todayKey">—</div>
+              </div>
+              <div class="stat">
+                <div class="stat__label">Pontos</div>
+                <div class="stat__value" id="totalScore">0</div>
+              </div>
+              <div class="stat">
+                <div class="stat__label">Sequência</div>
+                <div class="stat__value" id="streak">0</div>
+              </div>
+            </div>
+            <div class="footer__right">
+              <button class="btn btn--primary" id="btnShareApp" type="button">Compartilhar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- DITO -->
+        <section class="view" id="viewDito" aria-label="Dito do Vale">
+          <div class="view__top">
+            <button class="btn btn--ghost" data-nav="#home" type="button">← Voltar</button>
+            <div class="view__titles">
+              <div class="view__kicker">Palavra do dia</div>
+              <div class="view__title">Dito do Vale</div>
+            </div>
+            <button class="btn btn--ghost" id="btnDitoHelp" type="button">Ajuda</button>
+          </div>
+          <div id="ditoRoot"></div>
+        </section>
+
+        <!-- COMBINADO -->
+        <section class="view" id="viewCombinado" aria-label="Combinado">
+          <div class="view__top">
+            <button class="btn btn--ghost" data-nav="#home" type="button">← Voltar</button>
+            <div class="view__titles">
+              <div class="view__kicker">Conexões</div>
+              <div class="view__title">Combinado</div>
+            </div>
+            <button class="btn btn--ghost" id="btnCombinadoHelp" type="button">Ajuda</button>
+          </div>
+          <div id="combinadoRoot"></div>
+        </section>
+
+        <!-- SOLETRA -->
+        <section class="view" id="viewSoletra" aria-label="Soletra do Vale">
+          <div class="view__top">
+            <button class="btn btn--ghost" data-nav="#home" type="button">← Voltar</button>
+            <div class="view__titles">
+              <div class="view__kicker">Letras</div>
+              <div class="view__title">Soletra</div>
+            </div>
+            <button class="btn btn--ghost" id="btnSoletraHelp" type="button">Ajuda</button>
+          </div>
+          <div id="soletraRoot"></div>
+        </section>
+
+        <!-- QUANDO FOI -->
+        <section class="view" id="viewQuandoFoi" aria-label="Quando foi?">
+          <div class="view__top">
+            <button class="btn btn--ghost" data-nav="#home" type="button">← Voltar</button>
+            <div class="view__titles">
+              <div class="view__kicker">Quiz</div>
+              <div class="view__title">Quando foi?</div>
+            </div>
+            <button class="btn btn--ghost" id="btnQuandoFoiHelp" type="button">Ajuda</button>
+          </div>
+          <div id="quandoFoiRoot"></div>
+        </section>
+
+        <!-- VOUCHER CREATOR -->
+        <section class="view" id="viewVoucher" aria-label="Vale Atuante">
+          <div class="view__top">
+            <button class="btn btn--ghost" data-nav="#home" type="button">← Voltar</button>
+            <div class="view__titles">
+              <div class="view__kicker">Utilidade</div>
+              <div class="view__title">Vale Atuante</div>
+            </div>
+            <button class="btn btn--ghost" id="btnVoucherHelp" type="button">Ajuda</button>
+          </div>
+          <div id="voucherRoot"></div>
+        </section>
+
+        <!-- COPYWRITER -->
+        <section class="view" id="viewCopywriter" aria-label="Copywriter 1V">
+          <div class="view__top">
+            <button class="btn btn--ghost" data-nav="#home" type="button">← Voltar</button>
+            <div class="view__titles">
+              <div class="view__kicker">Editor</div>
+              <div class="view__title">Copywriter 1V</div>
+            </div>
+            <button class="btn btn--ghost" id="btnCopywriterHelp" type="button">Ajuda</button>
+          </div>
+          <div id="copywriterRoot"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="modal" id="modal">
+      <div class="modal__head">
+        <div class="modal__title" id="modalTitle">—</div>
+        <button class="btn btn--ghost" id="modalClose" type="button" aria-label="Fechar">
+          ✕
+        </button>
+      </div>
+      <div class="modal__body" id="modalBody"></div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

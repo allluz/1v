@@ -1,0 +1,48 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid"
+      }
+    },
+    "pending_approvals": {
+      "$type": {
+        "$id": {
+          ".read": false,
+          ".write": "auth != null && newData.child('uid').val() === auth.uid && newData.child('type').val() === $type && newData.child('id').val() === $id && (newData.child('status').val() === 'pending' || newData.child('status').val() === 'pending_edit')",
+          ".validate": "newData.hasChildren(['id', 'uid', 'type', 'title', 'status'])"
+        }
+      }
+    },
+    "cache": {
+      ".read": true,
+      ".write": true
+    },
+    "games": {
+      ".read": true,
+      ".write": true
+    },
+    "guide_live": {
+      ".read": true,
+      "$type": {
+        "$id": {
+          ".write": "auth != null && newData.child('uid').val() === auth.uid && newData.child('status').val() === 'live'"
+        }
+      }
+    },
+    "fcmTokens": {
+      ".read": false,
+      ".write": true
+    },
+    "online_status": {
+      ".read": true,
+      "$connection": {
+        ".write": "newData.exists() ? newData.hasChildren(['t']) && newData.child('t').isNumber() : true",
+        ".validate": "newData.hasChildren(['t']) && newData.child('t').isNumber()"
+      }
+    },
+    ".read": false,
+    ".write": false
+  }
+}

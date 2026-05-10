@@ -439,10 +439,16 @@
                 max-width: 500px;
                 width: calc(100vw - 220px - 260px - 40px);
             }
+            /* Hide duplicated home widgets on desktop — only sidebar shows them */
+            #view-home .impact-stats,
+            #view-home #home-widgets,
+            #view-home #home-footer {
+                display: none;
+            }
         }
 
-        /* TABLET LAYOUT */
-        @media (min-width: 768px) and (max-width: 1023px) {
+        /* TABLET NARROW (iPad mini portrait) */
+        @media (min-width: 768px) and (max-width: 899px) {
             .container { max-width: none; margin: 0 0 0 70px; }
             .bottom-nav { display: none !important; }
             #sidebar-right { display: none; }
@@ -471,6 +477,45 @@
                 left: calc(70px + (100vw - 70px) / 2);
                 max-width: 500px;
                 width: calc(100vw - 70px - 40px);
+            }
+        }
+
+        /* TABLET WIDE (iPad Air/Pro) — mostra sidebar-right se houver espaço */
+        @media (min-width: 900px) and (max-width: 1023px) {
+            .container { max-width: none; margin: 0 220px 0 70px; }
+            .bottom-nav { display: none !important; }
+            #sidebar-right { display: flex; width: 220px; }
+            #sidebar-left {
+                display: flex; width: 70px;
+                padding: 16px 0; align-items: center;
+            }
+            .sidebar-left__brand { flex-direction: column; padding: 0 8px 16px; gap: 4px; }
+            .sidebar-left__title { display: none; }
+            .sidebar-left__logo { width: 28px; height: 28px; }
+            .sidebar-left__profile { flex-direction: column; padding: 10px 0; }
+            .sidebar-left__user { display: none; }
+            .sidebar-left__nav { align-items: center; padding: 4px 4px; }
+            .sidebar-nav-item {
+                flex-direction: column; gap: 3px; padding: 10px 4px;
+                font-size: 0.5rem; text-align: center;
+            }
+            .sidebar-nav-item i { width: 20px; }
+            .sidebar-nav-item span { display: block; }
+            .sidebar-left__sos {
+                flex-direction: column; gap: 4px; padding: 10px;
+                font-size: 0.5rem; margin: 8px 4px 4px; text-align: center;
+            }
+            .sidebar-left__sos i { width: 18px; }
+            #mini-player-container {
+                left: calc(70px + (100vw - 70px - 220px) / 2 + 70px);
+                max-width: 460px;
+                width: calc(100vw - 70px - 220px - 40px);
+            }
+            /* Hide duplicated home widgets on wide tablet */
+            #view-home .impact-stats,
+            #view-home #home-widgets,
+            #view-home #home-footer {
+                display: none;
             }
         }
 
@@ -2351,6 +2396,12 @@
 }
 @media (max-width: 480px) {
     .home-widgets-grid { grid-template-columns: 1fr; }
+    .impact-stats { grid-template-columns: 1fr; }
+}
+@media (max-width: 360px) {
+    .stat-card { min-height: 110px; padding: 14px; }
+    .stat-value { font-size: 1.3rem; }
+    .home-grid-two { grid-template-columns: 1fr; }
 }
 
 </style>
@@ -2392,14 +2443,6 @@
             <i id="favorite-toggle" data-lucide="star" class="header-icon-btn" onclick="togglePageFavorite()" style="width:20px;"></i>
             <i data-lucide="bell" id="notif-btn" class="header-icon-btn" onclick="requestNotificationPermission()" style="width:20px;"></i>
         </div>
-        <!-- Center: Home button + Avatar -->
-        <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin:10px auto 3px;">
-            <i data-lucide="house" class="header-icon-btn" style="color:rgba(255,255,255,0.5); width:20px;" onclick="showView('home', document.querySelector('[data-view=home]'))"></i>
-            <div id="header-profile-btn" onclick="showView('perfil', this)" style="width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.08); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0;">
-                <i data-lucide="user" id="header-user-icon" style="width:18px; opacity:0.7;"></i>
-                <img id="header-user-avatar" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;">
-            </div>
-        </div>
         <!-- Title -->
         <div class="app-title" id="main-title" style="margin:2px 0 1px; font-size:1.2rem; text-align:center; width:100%;">UM <span>Vale</span></div>
         <div style="font-size:0.45rem; opacity:0.35; font-weight:800; letter-spacing:2px; text-transform:uppercase; text-align:center; width:100%;">A nossa região em um só lugar</div>
@@ -2417,10 +2460,14 @@
             <span id="greeting-text">Olá! Bem-vindo ao Vale.</span>
             <span id="greeting-phrase" style="font-size:0.6rem; opacity:0.5; font-weight:600;">O Vale está cheio de vida!</span>
         </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img id="search-user-avatar" src="" alt="" style="width:36px; height:36px; border-radius:50%; object-fit:cover; display:none; border:2px solid rgba(255,255,255,0.1); flex-shrink:0; cursor:pointer;" onclick="showView('perfil', this)">
-            <div class="search-bar" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:10px 16px; display:flex; align-items:center; gap:10px;">
-                <i data-lucide="search" style="width:16px; opacity:0.5; flex-shrink:0;"></i>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div id="header-profile-btn" onclick="showView('perfil', this)" style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.08); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0;">
+                <i data-lucide="user" id="header-user-icon" style="width:16px; opacity:0.7;"></i>
+                <img id="header-user-avatar" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;">
+            </div>
+            <i data-lucide="plus-circle" style="width:20px; color:var(--primary); flex-shrink:0; cursor:pointer;" onclick="handlePlusAction()"></i>
+            <div class="search-bar" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:9px 14px; display:flex; align-items:center; gap:8px;">
+                <i data-lucide="search" style="width:15px; opacity:0.5; flex-shrink:0;"></i>
                 <input type="text" placeholder="Pesquisar no Vale..." style="background:transparent; border:none; color:#fff; width:100%; outline:none; font-size:0.8rem;" onfocus="showView('buscar')">
             </div>
         </div>
@@ -2735,44 +2782,78 @@
 
 		<!-- DESKTOP SIDEBAR RIGHT (widgets complementares) -->
 		<aside id="sidebar-right" class="sidebar-right">
-			<div class="sidebar-right__section" id="sidebar-agenda-section">
-				<div class="sidebar-right__label">HOJE NO VALE</div>
-				<div id="sidebar-today-events" style="font-size:0.7rem; opacity:0.6; line-height:1.5;">
-					Carregando eventos...
+			<!-- TEMPO NO VALE -->
+			<div class="sidebar-right__section" id="sidebar-tempo-section" style="cursor:pointer;" onclick="toggleWeatherDetail()">
+				<div class="sidebar-right__label"><i data-lucide="sun" style="width:10px; display:inline-block; margin-right:4px;"></i> TEMPO NO VALE</div>
+				<div class="sidebar-right__weather">
+					<div>
+						<div id="sidebar-temp-value" style="font-size:1.4rem; font-weight:900;">--°C</div>
+						<div id="sidebar-weather-desc" style="font-size:0.5rem; opacity:0.5;">Porto União & União da Vitória</div>
+					</div>
+					<div id="sidebar-weather-icon" style="font-size:1.6rem;">☀️</div>
 				</div>
 			</div>
 
-			<div id="sidebar-widgets">
-				<div class="sidebar-right__section" id="sidebar-radio-section" style="cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('radio'),50);">
-					<div class="sidebar-right__label"><i data-lucide="radio" style="width:10px; display:inline-block; margin-right:4px;"></i> RÁDIO DO DIA</div>
-					<div id="sidebar-radio-content" style="font-size:0.8rem; font-weight:800;">Carregando...</div>
+			<!-- RIO IGUAÇU -->
+			<div class="sidebar-right__section" id="sidebar-rio-section" style="cursor:pointer;" onclick="toggleRiverDetail()">
+				<div class="sidebar-right__label"><i data-lucide="droplets" style="width:10px; display:inline-block; margin-right:4px;"></i> RIO IGUAÇU</div>
+				<div style="display:flex; justify-content:space-between; align-items:center;">
+					<div>
+						<div id="sidebar-river-value" style="font-size:1.1rem; font-weight:900; font-family:'DM Mono', monospace;">--</div>
+						<div id="sidebar-river-meta" style="font-size:0.45rem; opacity:0.5; margin-top:2px;">Aguardando...</div>
+					</div>
+					<div style="width:30px; height:30px; border-radius:50%; background:rgba(0,163,255,0.15); display:flex; align-items:center; justify-content:center;">
+						<i data-lucide="droplets" style="width:14px; color:var(--radar-blue);"></i>
+					</div>
 				</div>
+			</div>
 
-				<div class="sidebar-right__section" id="sidebar-game-section" style="cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('games'),50);">
-					<div class="sidebar-right__label"><i data-lucide="gamepad-2" style="width:10px; display:inline-block; margin-right:4px;"></i> JOGO DO DIA</div>
-					<div id="sidebar-game-content" style="display:flex; align-items:center; gap:8px;">
-						<span id="sidebar-game-icon" style="font-size:1.4rem;">🎮</span>
-						<div>
-							<div id="sidebar-game-title" style="font-size:0.75rem; font-weight:800;">Carregando...</div>
-							<div id="sidebar-game-desc" style="font-size:0.55rem; opacity:0.5;">Adivinhe palavras regionais</div>
+			<!-- PLACAR -->
+			<div class="sidebar-right__section" id="sidebar-placar-section">
+				<div class="sidebar-right__label"><i data-lucide="trophy" style="width:10px; display:inline-block; margin-right:4px;"></i> PLACAR</div>
+				<div id="sidebar-placar-content" style="font-size:0.55rem;">Carregando...</div>
+			</div>
+
+			<!-- RÁDIO + JOGOS (2 colunas) -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+				<div class="sidebar-right__section" id="sidebar-radio-section" style="cursor:pointer; padding:12px;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('radio'),50);">
+					<div class="sidebar-right__label" style="font-size:0.4rem; letter-spacing:1px;"><i data-lucide="radio" style="width:8px; display:inline-block; margin-right:2px;"></i> RÁDIO</div>
+					<div id="sidebar-radio-content" style="font-size:0.7rem; font-weight:800; line-height:1.2;">Carregando...</div>
+				</div>
+				<div class="sidebar-right__section" id="sidebar-game-section" style="cursor:pointer; padding:12px;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('games'),50);">
+					<div class="sidebar-right__label" style="font-size:0.4rem; letter-spacing:1px;"><i data-lucide="gamepad-2" style="width:8px; display:inline-block; margin-right:2px;"></i> JOGOS</div>
+					<div id="sidebar-game-content" style="display:flex; align-items:center; gap:6px;">
+						<span id="sidebar-game-icon" style="font-size:1.2rem;">🎮</span>
+						<div style="min-width:0;">
+							<div id="sidebar-game-title" style="font-size:0.6rem; font-weight:800;">Carregando...</div>
+							<div id="sidebar-game-desc" style="font-size:0.45rem; opacity:0.5;">Adivinhe palavras regionais</div>
 						</div>
 					</div>
 				</div>
+			</div>
 
-				<div class="sidebar-right__section" id="sidebar-astral-section" style="cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('astral'),50);">
-					<div class="sidebar-right__label"><i data-lucide="sparkles" style="width:10px; display:inline-block; margin-right:4px;"></i> POSIÇÃO ASTRAL</div>
-					<div id="sidebar-astral-content" style="display:flex; gap:8px;">
-						<div id="sidebar-sun" style="flex:1; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px; text-align:center;">
-							<div style="font-size:1rem;">☀️</div>
-							<div style="font-size:0.5rem; font-weight:700; opacity:0.4;">SOL</div>
-							<div id="sidebar-sun-name" style="font-size:0.55rem; font-weight:700;">--</div>
-						</div>
-						<div id="sidebar-moon" style="flex:1; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px; text-align:center;">
-							<div style="font-size:1rem;">🌙</div>
-							<div style="font-size:0.5rem; font-weight:700; opacity:0.4;">LUA</div>
-							<div id="sidebar-moon-name" style="font-size:0.55rem; font-weight:700;">--</div>
-						</div>
+			<!-- SIGNOS -->
+			<div class="sidebar-right__section" id="sidebar-astral-section" style="cursor:pointer;" onclick="showView('play', document.querySelector('[data-view=play]'));setTimeout(()=>setPlayTab('astral'),50);">
+				<div class="sidebar-right__label"><i data-lucide="sparkles" style="width:10px; display:inline-block; margin-right:4px;"></i> SIGNOS</div>
+				<div id="sidebar-astral-content" style="display:flex; gap:8px;">
+					<div id="sidebar-sun" style="flex:1; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px; text-align:center;">
+						<div style="font-size:0.9rem;">☀️</div>
+						<div style="font-size:0.45rem; font-weight:700; opacity:0.4;">SOL</div>
+						<div id="sidebar-sun-name" style="font-size:0.5rem; font-weight:700;">--</div>
 					</div>
+					<div id="sidebar-moon" style="flex:1; background:rgba(255,255,255,0.03); border-radius:10px; padding:8px; text-align:center;">
+						<div style="font-size:0.9rem;">🌙</div>
+						<div style="font-size:0.45rem; font-weight:700; opacity:0.4;">LUA</div>
+						<div id="sidebar-moon-name" style="font-size:0.5rem; font-weight:700;">--</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ÚLTIMAS VAGAS -->
+			<div class="sidebar-right__section" id="sidebar-vagas-section" style="cursor:pointer;" onclick="showView('guia', document.querySelector('[data-view=guia]'));setTimeout(()=>{setGuideTab('vagas');renderGuide();},50);">
+				<div class="sidebar-right__label"><i data-lucide="briefcase" style="width:10px; display:inline-block; margin-right:4px;"></i> ÚLTIMAS VAGAS</div>
+				<div id="sidebar-vagas-content">
+					<div style="font-size:0.55rem; opacity:0.4;">Nenhuma vaga no momento</div>
 				</div>
 			</div>
 
@@ -4056,17 +4137,6 @@
         }
         tempValueEl.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
 
-        // SIDEBAR RIGHT: today events
-        const sidebarToday = document.getElementById('sidebar-today-events');
-        if (sidebarToday) {
-            const today5 = todayEvents.slice(0, 5);
-            if (today5.length) {
-                sidebarToday.innerHTML = today5.map(e => `<div style="margin-bottom:6px; cursor:pointer;" onclick="openAgendaEventByKey('${getEventKey(e)}')"><span style="color:var(--primary);">•</span> ${escapeHtml(e.title)}</div>`).join('');
-            } else {
-                sidebarToday.textContent = 'Nenhum evento hoje';
-            }
-        }
-
         // RIO: Efeito de preenchimento líquido + alerta de seca/enchente
         const riverFill = document.getElementById('river-fill-level');
         const riverMetaEl = document.getElementById('home-river-meta');
@@ -4325,16 +4395,76 @@
 
     function renderSidebarRight() {
         const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+
+        // 1. TEMPO
+        const tempEl = document.getElementById('sidebar-temp-value');
+        const weatherIconEl = document.getElementById('sidebar-weather-icon');
+        const weatherDescEl = document.getElementById('sidebar-weather-desc');
+        if (tempEl) {
+            const temp = currentWeather?.temperature_2m;
+            tempEl.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
+        }
+        if (weatherIconEl) {
+            const code = currentWeather?.weather_code;
+            const hour = new Date().getHours();
+            const icons = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 51: '🌦️', 61: '🌧️', 80: '🌦️', 95: '⛈️' };
+            weatherIconEl.textContent = icons[code] || (hour >= 19 || hour < 6 ? '🌙' : '☀️');
+        }
+        if (weatherDescEl && currentWeather) {
+            const wind = currentWeather.wind_speed_10m;
+            weatherDescEl.textContent = wind != null ? `Vento ${Math.round(wind)}km/h` : 'Porto União & União da Vitória';
+        }
+
+        // 2. RIO
+        const riverValueEl = document.getElementById('sidebar-river-value');
+        const riverMetaEl = document.getElementById('sidebar-river-meta');
+        if (riverValueEl) {
+            riverValueEl.textContent = currentRiverData ? currentRiverData.value : '--';
+        }
+        if (riverMetaEl && currentRiverData?.time) {
+            riverMetaEl.textContent = `Rio Iguaçu • ${currentRiverData.time}`;
+        }
+
+        // 3. PLACAR
+        const placarContent = document.getElementById('sidebar-placar-content');
+        if (placarContent) {
+            const data = getSportsData();
+            const leagues = Object.values(data);
+            const activeLeague = window._sportsLeague || 0;
+            const league = leagues[activeLeague];
+            if (league && league.teams.length) {
+                const top = league.teams.slice(0, 5);
+                let html = `<div style="display:flex; gap:4px; margin-bottom:4px; overflow-x:auto; scrollbar-width:none;">`;
+                leagues.forEach((l, i) => {
+                    html += `<button onclick="window._sportsLeague=${i};renderSidebarRight()" style="padding:2px 6px; border-radius:50px; font-size:0.4rem; font-weight:800; white-space:nowrap; cursor:pointer; border:1px solid ${i===activeLeague?'var(--esporte-green)':'rgba(255,255,255,0.1)'}; background:${i===activeLeague?'rgba(40,205,65,0.15)':'transparent'}; color:${i===activeLeague?'var(--esporte-green)':'rgba(255,255,255,0.6)'};">${l.icon}</button>`;
+                });
+                html += `</div>`;
+                html += `<div style="display:grid; grid-template-columns:18px 1fr 24px; gap:1px; font-size:0.4rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; border-bottom:1px solid var(--card-border); padding:3px 4px;"><span>#</span><span>Time</span><span style="text-align:center;">P</span></div>`;
+                top.forEach(t => {
+                    const bg = t.pos <= 4 ? 'rgba(40,205,65,0.06)' : t.pos >= 17 ? 'rgba(231,76,60,0.06)' : 'transparent';
+                    html += `<div style="display:grid; grid-template-columns:18px 1fr 24px; gap:1px; padding:3px 4px; align-items:center; font-size:0.5rem; font-weight:700; background:${bg};"><span style="opacity:0.4;">${t.pos}</span><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.name}</span><span style="text-align:center; font-weight:900;">${t.pts}</span></div>`;
+                });
+                placarContent.innerHTML = html;
+            } else {
+                placarContent.textContent = 'Carregando tabela...';
+            }
+        }
+
+        // 4. RÁDIO
         const allRadios = cachedRadios.length ? cachedRadios.flatMap(c => c.items) : MUSIC_RADIOS.flatMap(c => c.items);
         const radioDoDia = allRadios.length ? allRadios[dayOfYear % allRadios.length] : null;
+        const radioContent = document.getElementById('sidebar-radio-content');
+        if (radioContent) {
+            if (radioDoDia) {
+                radioContent.innerHTML = `<div style="font-size:0.7rem; font-weight:900; display:block;">${escapeHtml(radioDoDia.name)}</div><div style="font-size:0.4rem; opacity:0.5; display:block; margin-bottom:4px;">${escapeHtml(radioDoDia.freq || '')}</div><button onclick="event.stopPropagation();toggleRadio(decodeURIComponent('${encodeURIComponent(radioDoDia.url)}'),decodeURIComponent('${encodeURIComponent(radioDoDia.name)}'))" style="padding:2px 8px; font-size:0.4rem; font-weight:800; background:var(--primary); color:#fff; border:none; border-radius:5px; cursor:pointer;">▶ Ouvir</button>`;
+            } else {
+                radioContent.textContent = 'Carregando...';
+            }
+        }
+
+        // 5. JOGOS
         const gameIdx = dayOfYear % GAME_PREVIEWS.length;
         const game = GAME_PREVIEWS[gameIdx];
-
-        // Radio
-        const radioContent = document.getElementById('sidebar-radio-content');
-        if (radioContent && radioDoDia) radioContent.textContent = `${radioDoDia.icon || '📻'} ${radioDoDia.name}`;
-
-        // Game
         const gameIcon = document.getElementById('sidebar-game-icon');
         const gameTitle = document.getElementById('sidebar-game-title');
         const gameDesc = document.getElementById('sidebar-game-desc');
@@ -4342,7 +4472,7 @@
         if (gameTitle) gameTitle.textContent = game.title;
         if (gameDesc) gameDesc.textContent = game.desc;
 
-        // Astral
+        // 6. SIGNOS
         const ZODIAC = sidebarZodiac();
         const refNewMoon = new Date(2025, 2, 29);
         const daysSince = (new Date() - refNewMoon) / 86400000;
@@ -4351,11 +4481,25 @@
         const moonSignIdx = Math.floor(((daysSince * 13.2 + 45) % 360) / 30);
         const moonSign = ZODIAC[moonSignIdx % 12];
         const sunSign = getSunSign(new Date());
-
         const sunName = document.getElementById('sidebar-sun-name');
         const moonName = document.getElementById('sidebar-moon-name');
-        if (sunName) sunName.textContent = sunSign.name;
-        if (moonName) moonName.textContent = moonPhaseName;
+        if (sunName) sunName.textContent = `${sunSign.icon} ${sunSign.name}`;
+        if (moonName) moonName.textContent = `🌙 ${moonPhaseName}`;
+
+        // 7. VAGAS
+        const vagasContent = document.getElementById('sidebar-vagas-content');
+        if (vagasContent) {
+            const vagasAoVivo = (guideLiveCache?.vagas?.oportunidades || []).slice(0, 3);
+            const vagasPortal = newsItems.filter(n => n.label?.toLowerCase() === 'oportunidades').slice(0, 2);
+            const vagas = vagasAoVivo.length ? vagasAoVivo : vagasPortal;
+            if (vagas.length) {
+                vagasContent.innerHTML = vagas.map(v => `<div style="font-size:0.55rem; font-weight:700; line-height:1.2; color:rgba(255,255,255,0.9); margin-bottom:3px; display:flex; gap:4px; align-items:start;"><span style="color:#25D366; flex-shrink:0;">▸</span><span>${escapeHtml(v.name || v.title || '')}</span></div>`).join('');
+            } else {
+                vagasContent.innerHTML = '<div style="font-size:0.55rem; opacity:0.4;">Nenhuma vaga no momento</div>';
+            }
+        }
+
+        try { lucide.createIcons(); } catch(e) {}
     }
 
     // zodiac helper shared between sidebar and footer

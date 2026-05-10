@@ -448,7 +448,7 @@
                 display: flex;
                 flex-direction: column;
                 gap: 14px;
-                width: 360px;
+                width: 400px;
                 flex-shrink: 0;
                 position: sticky;
                 top: 20px;
@@ -1202,6 +1202,16 @@
             width: fit-content;
             padding: 0 10px;
             will-change: transform;
+        }
+        .finance-ticker-track.animate-scroll {
+            animation: ticker-scroll 35s linear infinite;
+        }
+        @keyframes ticker-scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-25%); }
+        }
+        .finance-ticker:hover .finance-ticker-track.animate-scroll {
+            animation-play-state: paused;
         }
         .finance-ticker-item {
             display: flex;
@@ -2520,9 +2530,29 @@
         </div>
     </div>
 
-	    <section id="view-home" class="view active">
-            <div class="desktop-layout-wrapper">
-                <div class="desktop-main-col">
+    <!-- DESKTOP GLOBAL LAYOUT WRAPPER -->
+    <div class="desktop-layout-wrapper">
+        <div class="desktop-main-col">
+            <!-- STICKY SEARCH BAR (stays at top on scroll) -->
+            <div id="global-search-container" style="position:sticky; top:0; z-index:50; background:rgba(9,12,26,0.85); backdrop-filter:blur(16px); padding:12px 20px 14px; border-bottom:1px solid rgba(255,255,255,0.05); display:block;">
+                <div id="user-greeting" style="font-size:0.8rem; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:8px; color:#fff;">
+                    <span id="greeting-text">Olá! Bem-vindo ao Vale.</span>
+                    <span id="greeting-phrase" style="font-size:0.6rem; opacity:0.5; font-weight:600;">O Vale está cheio de vida!</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div id="header-profile-btn" onclick="showView('perfil', this)" style="width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.08); border:2px solid var(--primary); display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0;">
+                        <i data-lucide="user" id="header-user-icon" style="width:16px; opacity:0.7;"></i>
+                        <img id="header-user-avatar" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:50%;">
+                    </div>
+                    <i data-lucide="plus-circle" style="width:28px; height:28px; color:var(--primary); flex-shrink:0; cursor:pointer; background:rgba(212,168,67,0.12); border-radius:20px; padding:2px;" onclick="handlePlusAction()"></i>
+                    <div class="search-bar" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:9px 14px; display:flex; align-items:center; gap:8px;" onclick="showView('buscar'); setTimeout(()=>{const i=document.getElementById('main-search-input');if(i){i.focus();}},120);">
+                        <i data-lucide="search" style="width:15px; opacity:0.5; flex-shrink:0;"></i>
+                        <input type="text" placeholder="Pesquisar no Vale..." style="background:transparent; border:none; color:#fff; width:100%; outline:none; font-size:0.8rem; pointer-events:none;" readonly>
+                    </div>
+                </div>
+            </div>
+            <section id="view-home" class="view active">
+                <!-- Coluna principal da Home -->
                     <!-- Letreiro financeiro completo na home (restaurado do backup) -->
                     <div class="finance-ticker" id="homeFinanceTicker" data-order="0" onclick="showView('news', document.querySelector('[data-view=news]'))" style="cursor:pointer; margin-bottom:14px; display:flex; align-items:center;">
                         <span style="background:var(--primary); color:#000; font-size:0.55rem; font-weight:900; padding:2px 8px; border-radius:4px; margin-right:12px; flex-shrink:0; letter-spacing:0.5px;">MERCADOS</span>
@@ -2593,9 +2623,6 @@
                     <div id="home-widgets" data-order="10"></div>
                     <div id="home-footer" data-order="11" style="margin-top:25px;"></div>
 
-                </div>
-                <aside id="sidebar-right"></aside>
-            </div>
 	    </section>
 
         <section id="view-play" class="view">
@@ -2790,6 +2817,10 @@
         </div>
 
 	    </section>
+
+        </div> <!-- Fim .desktop-main-col -->
+        <aside id="sidebar-right"></aside>
+    </div> <!-- Fim .desktop-layout-wrapper -->
 
         <!-- REGISTRATION MODAL -->
         <div id="reg-modal" class="modal-overlay" onclick="if(event.target===this) closeRegistrationModal()">
@@ -4306,9 +4337,10 @@
                     <span class="c-divider"></span>
                 </div>
             `).join('');
+            // Usamos 4 repetições para garantir o loop infinito suave no CSS
             homeTracks.forEach(track => { track.innerHTML = html + html + html + html; });
-            document.getElementById('homeFinanceTicker').style.display = 'block';
-            if (typeof startTickerAutoScroll === 'function') startTickerAutoScroll();
+            document.getElementById('homeFinanceTicker').style.display = 'flex';
+            startTickerAutoScroll();
         }
 
         renderHomeNews();
@@ -4325,35 +4357,43 @@
         }
         tempValueEl.textContent = temp != null ? `${Math.round(temp)}°C` : '--°C';
         
-        // GUIA: Destaque da última empresa
+        // GUIA: Destaque da última empresa (Layout Backup Standard)
         const guideEl = document.getElementById('home-guide-feature');
         if (guideEl) {
             const latestEmpresa = getLatestGuideCompany();
-            const latestOportunidade = newsItems.filter(n => n.label?.toLowerCase() === 'oportunidades')[0];
-            
-            if (latestEmpresa || latestOportunidade) {
-                const latestEmpresaKey = latestEmpresa ? encodeURIComponent(getGuideItemKey(latestEmpresa)) : '';
+            if (latestEmpresa) {
+                const latestKey = getGuideItemKey(latestEmpresa);
                 guideEl.style.opacity = '1';
+                guideEl.style.padding = '0';
+                guideEl.style.overflow = 'hidden';
+                guideEl.style.background = 'rgba(255,255,255,0.02)';
+                guideEl.style.border = '1px solid rgba(255,255,255,0.08)';
                 guideEl.style.textAlign = 'left';
-                guideEl.style.borderStyle = 'solid';
-                guideEl.style.cursor = latestEmpresa ? 'pointer' : 'default';
-                guideEl.onclick = latestEmpresa ? () => openGuideItemByKey(getGuideItemKey(latestEmpresa)) : null;
+                guideEl.onclick = () => openGuideItemByKey(latestKey);
+                
                 guideEl.innerHTML = `
-                    <div style="font-size:0.6rem; opacity:0.6; margin-bottom:12px; font-weight:800; text-transform:uppercase;">${latestEmpresa ? 'Destaque do Guia' : 'Oportunidades'}</div>
-                    <div style="display:flex; gap:15px; align-items:start;">
-                        ${latestEmpresa?.image ? `<img src="${latestEmpresa.image}" style="width:70px; height:70px; border-radius:15px; object-fit:cover; border:1px solid rgba(255,255,255,0.1);">` : ''}
-                        <div style="flex:1;">
-                            <div style="font-size:1rem; font-weight:900; line-height:1.2; color:#fff;">${escapeHtml(latestEmpresa?.name || latestOportunidade?.title)}</div>
-                            <div style="font-size:0.7rem; opacity:0.7; margin:5px 0 10px;">${escapeHtml(clipText(latestEmpresa?.desc || latestOportunidade?.summary || '', 80))}</div>
-                            <div style="display:flex; gap:8px;">
-                                ${latestEmpresa ? `
-                                ${latestEmpresa.whatsapp ? `<button class="btn-action" style="padding:6px 15px; font-size:0.65rem; margin:0; background:#25D366; color:#fff; border:none;" onclick="event.stopPropagation(); window.open('${latestEmpresa.whatsapp}', '_blank')"><i data-lucide="message-circle" style="width:12px; display:inline-block; vertical-align:middle; margin-right:4px;"></i> WhatsApp</button>` : ''}
-                                <button class="btn-action" style="padding:6px 15px; font-size:0.65rem; margin:0; background:var(--primary); color:#fff; border:none; box-shadow:0 4px 10px rgba(212,168,67,0.2);" onclick="event.stopPropagation(); openGuideItemByKey(decodeURIComponent('${latestEmpresaKey}'))">Ver no Guia</button>
-                                ` : `<button class="btn-action" style="padding:6px 15px; font-size:0.65rem; margin:0; background:var(--primary); color:#fff; border:none;" onclick="window.open('${latestOportunidade.link}', '_blank')">Ver Vaga</button>`}
+                    <div style="position:relative;">
+                        ${latestEmpresa.image ? `<img src="${latestEmpresa.image}" style="width:100%; height:140px; object-fit:cover; opacity:0.7;">` : `<div style="width:100%; height:100px; background:var(--primary); opacity:0.1; display:flex; align-items:center; justify-content:center;"><i data-lucide="store" style="width:30px; opacity:0.3;"></i></div>`}
+                        <div style="position:absolute; bottom:0; left:0; right:0; padding:15px; background:linear-gradient(to top, rgba(9,12,26,1), transparent);">
+                            <div style="font-size:0.5rem; font-weight:900; color:var(--primary); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Recém Chegada no Guia</div>
+                            <div style="font-size:1.1rem; font-weight:900; color:#fff; line-height:1.1;">${escapeHtml(latestEmpresa.name)}</div>
+                        </div>
+                    </div>
+                    <div style="padding:15px; pt:5px;">
+                        <div style="font-size:0.75rem; opacity:0.7; margin-bottom:12px; line-height:1.4;">${escapeHtml(clipText(latestEmpresa.desc || '', 90))}</div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <div style="display:flex; align-items:center; gap:8px; font-size:0.65rem; font-weight:700; opacity:0.8;">
+                                <i data-lucide="phone" style="width:12px; color:var(--primary);"></i> ${escapeHtml(latestEmpresa.contact || 'Ver contato')}
+                            </div>
+                            <div style="display:flex; gap:8px; margin-top:5px;">
+                                <button class="btn-action" style="flex:1; margin:0; font-size:0.65rem; background:var(--primary); color:#fff; border:none;" onclick="event.stopPropagation(); openGuideItemByKey('${latestKey}')">VER NO GUIA</button>
+                                ${latestEmpresa.whatsapp ? `<button class="btn-action" style="flex:1; margin:0; font-size:0.65rem; background:#25D366; color:#fff; border:none;" onclick="event.stopPropagation(); window.open('${latestEmpresa.whatsapp}', '_blank')">WHATSAPP</button>` : ''}
                             </div>
                         </div>
                     </div>
                 `;
+            } else {
+                guideEl.style.display = 'none';
             }
         }
         // VAGAS + ÚLTIMAS VAGAS
@@ -7109,17 +7149,20 @@
                     }
                     return false;
                 }));
-                currentGuideTab = found?.category?.key || 'empresas';
-                currentGuideSubtab = found?.sub?.key || 'destaques';
-                currentGuideItem = Math.max(0, found?.index ?? 0);
+                if (found) {
+                    currentGuideTab = found.category.key;
+                    currentGuideSubtab = found.sub.key;
+                    currentGuideItem = found.index;
+                }
                 showView('guia', document.querySelector('[data-view=guia]'));
                 renderGuide();
             }
 
             function openGuideItemByName(name) {
                 const targetName = normalizeText(name || '');
-                const target = getAllRegisteredGuideItems().find(item => normalizeText(item.name) === targetName);
-                openGuideItemByKey(getGuideItemKey(target || { name }));
+                const all = getAllRegisteredGuideItems();
+                const target = all.find(item => normalizeText(item.name) === targetName);
+                if (target) openGuideItemByKey(getGuideItemKey(target));
             }
 
             function openLatestGuideCompany() {
@@ -7145,9 +7188,7 @@
                         });
                     });
                     guideLiveCache = cache;
-                } catch(e) {
-                    console.warn('Erro ao carregar guide_live:', e);
-                }
+                } catch(e) { console.warn('Error refreshing guide live cache', e); }
             }
 
             function setGuideLocationFilter(value) {
@@ -7163,7 +7204,9 @@
 		        const category = getCurrentGuideCategory();
 		        const subtab = getCurrentGuideSubtab();
 		        const staticItems = subtab?.items || [];
-                if (currentGuideTab === 'empresas' && currentGuideSubtab === 'destaques' && staticItems.length && currentGuideItem < 0) {
+                
+                // Se for a aba de empresas, e não houver item selecionado, selecionamos o primeiro (mais recente)
+                if (currentGuideTab === 'empresas' && currentGuideItem < 0) {
                     currentGuideItem = 0;
                 }
 
@@ -7232,18 +7275,22 @@
 	                                    </div>
 	                                    ${isActive ? `
 	                                        <div class="guide-accordion-content" style="margin-top:20px; border-top:1px solid var(--card-border); padding-top:15px; animation: fadeIn 0.3s ease;">
+                                                <div style="margin-bottom:15px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); height:160px;">
+                                                    <iframe width="100%" height="160" frameborder="0" style="border:0;" allowfullscreen src="https://www.google.com/maps?q=${item.coords ? `${item.coords.lat},${item.coords.lng}` : encodeURIComponent(item.mapQuery || item.name + ' ' + (item.address || ''))}&z=15&output=embed"></iframe>
+                                                </div>
 	                                            ${hasPhoto ? `<img src="${escapeHtml(item.image)}" style="width:100%; height:180px; object-fit:cover; border-radius:12px; margin-bottom:15px;">` : ''}
-	                                            ${locationLine ? `<div style="display:flex; align-items:flex-start; gap:10px; padding:12px; border-radius:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); margin-bottom:14px;">
-	                                                <i data-lucide="map-pin" style="width:16px; flex-shrink:0; color:var(--primary); margin-top:2px;"></i>
-	                                                <div style="font-size:0.76rem; line-height:1.4; font-weight:800;">${escapeHtml(locationLine)}</div>
-	                                            </div>` : ''}
-	                                            <div style="font-size:0.9rem; line-height:1.6; margin-bottom:15px; opacity:0.9;">
+                                                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
+                                                    ${item.hours ? `<div style="display:flex; align-items:center; gap:8px; font-size:0.7rem; opacity:0.8;"><i data-lucide="clock" style="width:14px; color:var(--primary);"></i> ${escapeHtml(item.hours)}</div>` : ''}
+                                                    ${item.contact ? `<div style="display:flex; align-items:center; gap:8px; font-size:0.7rem; opacity:0.8;"><i data-lucide="phone" style="width:14px; color:var(--primary);"></i> ${escapeHtml(item.contact)}</div>` : ''}
+                                                    ${locationLine ? `<div style="display:flex; align-items:start; gap:8px; font-size:0.7rem; opacity:0.8;"><i data-lucide="map-pin" style="width:14px; color:var(--primary); flex-shrink:0; margin-top:2px;"></i> ${escapeHtml(locationLine)}</div>` : ''}
+                                                </div>
+	                                            <div style="font-size:0.85rem; line-height:1.6; margin-bottom:18px; opacity:0.9;">
 	                                                ${escapeHtml(item.note || item.desc || '')}
 	                                            </div>
 	                                            <div class="guide-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
-	                                                ${item.whatsapp ? `<button class="btn-action" style="flex:1; min-width:120px; margin:0; background:#25D366; color:#fff;" onclick="event.stopPropagation(); window.open('${escapeHtml(item.whatsapp)}','_blank')">WhatsApp</button>` : ''}
-	                                                <button class="btn-action" style="flex:1; min-width:120px; margin:0; background:rgba(255,255,255,0.05); color:var(--primary);" onclick="event.stopPropagation(); window.open('${escapeHtml(mapUrl)}','_blank')">Abrir no Maps</button>
-                                                    ${item.link ? `<button class="btn-action" style="flex:1; min-width:120px; margin:0; background:var(--primary); color:#fff;" onclick="event.stopPropagation(); window.open('${escapeHtml(item.link)}','_blank')">Ler no Portal</button>` : ''}
+	                                                ${item.whatsapp ? `<button class="btn-action" style="flex:1; min-width:120px; margin:0; background:#25D366; color:#fff; font-weight:900;" onclick="event.stopPropagation(); window.open('${escapeHtml(item.whatsapp)}','_blank')">WhatsApp</button>` : ''}
+	                                                <button class="btn-action" style="flex:1; min-width:120px; margin:0; background:rgba(212,168,67,0.12); color:var(--primary); font-weight:900;" onclick="event.stopPropagation(); window.open('${escapeHtml(mapUrl)}','_blank')">Abrir Mapa</button>
+                                                    ${item.link ? `<button class="btn-action" style="flex:1; min-width:120px; margin:0; background:var(--primary); color:#fff; font-weight:900;" onclick="event.stopPropagation(); window.open('${escapeHtml(item.link)}','_blank')">Detalhes</button>` : ''}
 	                                            </div>
 	                                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:15px; border-top:1px solid rgba(255,255,255,0.05);">
 	                                                <div style="display:flex; align-items:center; gap:10px;">

@@ -439,6 +439,9 @@
                 max-width: 500px;
                 width: calc(100vw - 220px - 260px - 40px);
             }
+            /* No desktop clima/rio estão na sidebar direita — não duplicar */
+            .impact-stats { display: none; }
+            #weather-detail, #river-detail { display: none !important; }
         }
 
         /* TABLET LAYOUT */
@@ -922,6 +925,45 @@
         }
         .header-btn--primary i { color: var(--primary); }
         .header-btn--danger i { color: #e74c3c; }
+        .header-btn--search { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06); }
+        .header-btn--search:hover { background: rgba(255,78,0,0.1); border-color: rgba(255,78,0,0.2); }
+        .header-btn--search:hover i { color: var(--primary); }
+
+        /* STICKY MINI TITLE BAR */
+        #sticky-title-bar {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 16px;
+            background: rgba(9,12,26,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin: 0 -20px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(-100%);
+        }
+        body.header-hidden #sticky-title-bar {
+            opacity: 1; pointer-events: auto;
+            transform: translateY(0);
+        }
+        #sticky-title-text {
+            flex: 1; font-size: 0.85rem; font-weight: 900; color: #fff;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .sticky-home-btn, .sticky-search-btn {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: rgba(255,255,255,0.06); border: none;
+            color: rgba(255,255,255,0.6); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: 0.2s;
+        }
+        .sticky-home-btn:hover, .sticky-search-btn:hover {
+            background: rgba(255,78,0,0.1); color: var(--primary);
+        }
+        body.header-hidden .container { padding-top: 0; }
+        @media (min-width: 1024px) {
+            #sticky-title-bar { margin: 0 -24px; }
+        }
 
         .header-bar {
             display: flex;
@@ -2371,7 +2413,10 @@
 <div class="bg-fixed"></div>
 
 <div class="container">
-    <header role="banner" aria-label="UM Vale" class="app-header">
+    <!-- SENTINEL for sticky header detection -->
+    <div id="header-sentinel" style="position:absolute; top:0; left:0; width:1px; height:1px; pointer-events:none;"></div>
+
+    <header role="banner" aria-label="UM Vale" class="app-header" id="main-header">
         <div id="header-wallpaper" style="position:absolute; inset:0; z-index:0; background-size:cover; background-position:center 30%; opacity:0.2; transition:opacity 1s;">
             <div style="position:absolute; inset:0; background:linear-gradient(to top, var(--bg-color) 0%, transparent 50%, var(--bg-color) 100%);"></div>
         </div>
@@ -2389,6 +2434,9 @@
                 </div>
             </div>
             <div class="header-bar-right">
+                <button type="button" class="header-btn header-btn--search" aria-label="Pesquisar" onclick="showView('buscar')">
+                    <i data-lucide="search"></i>
+                </button>
                 <button type="button" class="header-btn header-btn--primary" aria-label="Adicionar empresa ou vaga" onclick="handlePlusAction()">
                     <i data-lucide="plus-circle"></i>
                 </button>
@@ -2400,15 +2448,20 @@
                 </button>
             </div>
         </div>
-        <div class="header-search" role="search" aria-label="Pesquisar no UM Vale">
-            <div class="header-search-inner">
-                <i data-lucide="search" aria-hidden="true" style="width:16px; opacity:0.5; flex-shrink:0;"></i>
-                <input type="search" placeholder="Pesquisar no Vale..." aria-label="Pesquisar empresas, eventos, notícias" onfocus="showView('buscar')">
-            </div>
-        </div>
         <div id="home-doodle" style="display:none; text-align:center;"></div>
         <div id="header-date-strip" style="font-size:0.6rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px; text-align:center; width:100%; padding:0 12px 4px;"></div>
     </header>
+
+    <!-- STICKY MINI BAR (appears when header scrolls past) -->
+    <div id="sticky-title-bar">
+        <button type="button" class="sticky-home-btn" aria-label="Início" onclick="showView('home', document.querySelector('[data-view=home]'))">
+            <i data-lucide="chevron-left" style="width:18px;"></i>
+        </button>
+        <span id="sticky-title-text">Início</span>
+        <button type="button" class="sticky-search-btn" aria-label="Pesquisar" onclick="showView('buscar')">
+            <i data-lucide="search" style="width:16px;"></i>
+        </button>
+    </div>
 
     <!-- GREETING (moved to home content, rendered by JS) -->
     <div id="home-greeting" style="display:none; padding:12px 20px 4px;"></div>
@@ -3854,7 +3907,18 @@
             hideSplash();
             clearTimeout(safetyTimer);
         }
-        
+
+        // Sticky title bar on scroll (IntersectionObserver)
+        try {
+            const sentinel = document.getElementById('header-sentinel');
+            if (sentinel && 'IntersectionObserver' in window) {
+                const obs = new IntersectionObserver(([entry]) => {
+                    document.body.classList.toggle('header-hidden', !entry.isIntersecting);
+                }, { threshold: 0, rootMargin: '-1px 0px 0px 0px' });
+                obs.observe(sentinel);
+            }
+        } catch(e) { console.warn('Sticky header observer failed', e); }
+
         Promise.all([
             fetchEvents({ background: true }).catch(e => console.warn('Events failed:', e)),
             fetchNewsFeed().catch(e => console.warn('News failed:', e)),
@@ -7796,6 +7860,16 @@
 		            play: 'UM <span>Play</span>'
 		        };
 		        titleEl.innerHTML = map[viewId] || map.home;
+
+		        // sync sticky title bar
+		        const stickyTitle = document.getElementById('sticky-title-text');
+		        if (stickyTitle) {
+		            const plain = {
+		                home: 'Início', agenda: 'Onde Ir', news: 'Notícias',
+		                guia: 'Guia', buscar: 'Busca', play: '1V PLAY'
+		            };
+		            stickyTitle.textContent = plain[viewId] || 'UM Vale';
+		        }
 
 		        try {
 		            const titles = {

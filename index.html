@@ -443,6 +443,35 @@
                 gap: 24px;
                 align-items: start;
             }
+            /* Sidebar direita — widgets móveis */
+            #sidebar-right {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+                width: 240px;
+                flex-shrink: 0;
+                position: sticky;
+                top: 20px;
+                max-height: calc(100vh - 40px);
+                overflow-y: auto;
+                scrollbar-width: none;
+                padding-right: 4px;
+            }
+            #sidebar-right::-webkit-scrollbar { display: none; }
+            /* Layout 3-colunas: conteudo principal + sidebar direita */
+            .desktop-layout-wrapper {
+                display: flex;
+                gap: 24px;
+                align-items: flex-start;
+            }
+            .desktop-main-col {
+                flex: 1;
+                min-width: 0;
+            }
+            /* Ocultar na home os widgets que vão pro sidebar (via JS) */
+            @media (min-width: 1024px) {
+                .widget-in-sidebar { display: none !important; }
+            }
         }
 
         /* TABLET NARROW (iPad mini portrait) */
@@ -2105,9 +2134,19 @@
         }
         .play-yt-btn:hover { transform: scale(1.05); }
         .home-clock-btn { position: relative; overflow: visible; }
-        .home-clock-btn .clock-ring {
-            position: absolute; inset: 0; border-radius: 50%;
-            z-index: 0; transition: background 0.8s ease;
+        .home-clock-btn .clock-ring, .sidebar-nav-item .clock-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            z-index: 1;
+            padding: 3px;
+            background: conic-gradient(from 0deg, var(--primary) 0%, var(--primary) 0%, transparent 0%);
+            -webkit-mask: radial-gradient(circle at center, transparent 65%, black 67%);
+            mask: radial-gradient(circle at center, transparent 65%, black 67%);
+            transition: background 0.3s ease;
+        }
+        .sidebar-nav-item .clock-ring {
+            inset: -4px;
         }
         .home-clock-btn .clock-inner {
             position: absolute; inset: 3px; background: #090C1A;
@@ -2403,7 +2442,7 @@
 <div id="splash-screen" class="splash">
     <div class="splash__content">
         <img src="https://umvale.wordpress.com/wp-content/uploads/2026/05/23e9addd-68b6-4407-bd96-4b62fd82db94.png?w=196&h=196" style="width:80px; height:80px; margin-bottom:15px; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));" alt="1V">
-        <div class="splash__title-app">UM Vale</div>
+        <div class="splash__title-app">UM VALE NEWS</div>
         <div style="font-size:0.6rem; opacity:0.5; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;">A nossa região em um só lugar</div>
         <div id="splash-msg" class="splash__msg">Carregando eventos...</div>
         <style>
@@ -2481,64 +2520,75 @@
     </div>
 
 	    <section id="view-home" class="view active">
-            <div class="finance-ticker" id="financeTicker">
-                <div class="finance-ticker-track" id="tickerTrack"></div>
-            </div>
-            <div id="user-home-card" style="display:none;"></div>
-
-	        <div class="impact-stats" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
-	                <div class="stat-card stat-card--weather" style="position:relative; overflow:hidden;" onclick="toggleWeatherDetail()">
-                    <div id="weather-icon-box" style="position:absolute; top:15px; right:15px; font-size:1.6rem; opacity:0.8;">☀️</div>
-                    <div class="stat-content">
-                        <div class="stat-label">TEMPO NO VALE</div>
-                        <div class="stat-value" id="home-temp-value">--°C</div>
-                        <div id="home-weather-meta" style="font-size:0.55rem; opacity:0.5; margin-top:2px;">Porto União & União da Vitória</div>
+            <div class="desktop-layout-wrapper">
+                <div class="desktop-main-col">
+                    <!-- Widget financeiro compacto (ticker completo fica na aba News) -->
+                    <div id="home-finance-pill" data-order="0" onclick="showView('news', document.querySelector('[data-view=news]'))" style="cursor:pointer; display:flex; align-items:center; gap:8px; padding:8px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:20px; overflow:hidden; margin-bottom:12px;">
+                        <i data-lucide="trending-up" style="width:12px; color:var(--primary); flex-shrink:0;"></i>
+                        <div id="home-finance-preview" class="finance-ticker" style="flex:1; height:18px; overflow:hidden; mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);">
+                            <div class="finance-ticker-track" id="tickerTrack" style="height:18px; gap:20px;"></div>
+                        </div>
+                        <span style="font-size:0.45rem; color:var(--primary); font-weight:800; opacity:0.6; flex-shrink:0;">MERCADOS ›</span>
                     </div>
-	                </div>
-	                <div class="stat-card stat-card--river" style="position:relative; overflow:hidden; cursor:pointer;" onclick="toggleRiverDetail()">
-	                    <div id="river-fill-level" class="liquid-container">
-	                        <div class="liquid-wave"></div>
-	                    </div>
-	                    <div class="stat-content">
-	                        <div class="stat-label">Rio Iguaçu</div>
-	                        <div class="stat-value" id="home-river-value">--</div>
-	                        <div class="stat-meta" id="home-river-meta">Nível Copel</div>
-	                    </div>
-	                </div>
-	        </div>
-	        <div id="weather-detail" style="display:none; margin-bottom:20px;"></div>
-	        <div id="river-detail" style="display:none; margin-bottom:20px;"></div>
+                    <div id="user-home-card" data-order="1" style="display:none;"></div>
 
-            <div class="card" id="home-guide-feature" style="padding:14px 18px; background:rgba(212,168,67,0.06); border:1px solid rgba(212,168,67,0.15); border-radius:18px; text-align:center; margin-bottom:18px; cursor:pointer;" onclick="showView('guia', document.querySelector('[data-view=guia]'))">
-                <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
-                    <span style="font-size:1.1rem;">📋</span>
-                    <div>
-                        <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--primary);">Guia UM Vale</div>
-                        <div style="font-size:0.55rem; opacity:0.6; margin-top:2px;">Empresas, serviços e oportunidades</div>
+                    <div id="home-impact-stats-container" data-order="2" class="impact-stats" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:25px;">
+                            <div class="stat-card stat-card--weather" style="position:relative; overflow:hidden;" onclick="toggleWeatherDetail()">
+                            <div id="weather-icon-box" style="position:absolute; top:15px; right:15px; font-size:1.6rem; opacity:0.8;">☀️</div>
+                            <div class="stat-content">
+                                <div class="stat-label">TEMPO NO VALE</div>
+                                <div class="stat-value" id="home-temp-value">--°C</div>
+                                <div id="home-weather-meta" style="font-size:0.55rem; opacity:0.5; margin-top:2px;">Porto União & União da Vitória</div>
+                            </div>
+                            </div>
+                            <div class="stat-card stat-card--river" style="position:relative; overflow:hidden; cursor:pointer;" onclick="toggleRiverDetail()">
+                                <div id="river-fill-level" class="liquid-container">
+                                    <div class="liquid-wave"></div>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-label">Rio Iguaçu</div>
+                                    <div class="stat-value" id="home-river-value">--</div>
+                                    <div class="stat-meta" id="home-river-meta">Nível Copel</div>
+                                </div>
+                            </div>
                     </div>
-                    <span style="font-size:1rem; opacity:0.4;">▸</span>
+                    <div id="weather-detail" data-order="3" style="display:none; margin-bottom:20px;"></div>
+                    <div id="river-detail" data-order="4" style="display:none; margin-bottom:20px;"></div>
+
+                    <div class="card" id="home-guide-feature" data-order="5" style="padding:14px 18px; background:rgba(212,168,67,0.06); border:1px solid rgba(212,168,67,0.15); border-radius:18px; text-align:center; margin-bottom:18px; cursor:pointer;" onclick="showView('guia', document.querySelector('[data-view=guia]'))">
+                        <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                            <span style="font-size:1.1rem;">📋</span>
+                            <div>
+                                <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--primary);">Guia UM Vale</div>
+                                <div style="font-size:0.55rem; opacity:0.6; margin-top:2px;">Empresas, serviços e oportunidades</div>
+                            </div>
+                            <span style="font-size:1rem; opacity:0.4;">▸</span>
+                        </div>
+                    </div>
+
+                    <div class="home-grid-two" data-order="6">
+                        <div id="home-spotlight"></div>
+                        <div class="home-side-stack" id="home-side-cards"></div>
+                    </div>
+
+                    <div class="card" id="home-today-events" data-order="7" style="padding:15px; background:rgba(255,255,255,0.03); border-radius:20px; display:none;">
+                        <div class="card-type" style="font-size:0.55rem; opacity:0.6; margin-bottom:10px; font-weight:800; text-transform:uppercase;">Lista de Hoje</div>
+                        <div id="home-today-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+                    </div>
+
+                    <div id="home-radar-section" data-order="8" style="margin-top:25px;"></div>
+                    <!-- Grid 2 colunas no desktop para 1V Esporte e Vale Plural -->
+                    <div class="home-sections-desktop-grid" data-order="9" style="margin-top:25px;">
+                        <div id="home-esporte-section"></div>
+                        <div id="home-plural-section"></div>
+                    </div>
+
+                    <div id="home-widgets" data-order="10"></div>
+                    <div id="home-footer" data-order="11" style="margin-top:25px;"></div>
+
                 </div>
+                <aside id="sidebar-right"></aside>
             </div>
-
-	        <div class="home-grid-two">
-	            <div id="home-spotlight"></div>
-	            <div class="home-side-stack" id="home-side-cards"></div>
-	        </div>
-
-	        <div class="card" id="home-today-events" style="padding:15px; background:rgba(255,255,255,0.03); border-radius:20px; display:none;">
-	            <div class="card-type" style="font-size:0.55rem; opacity:0.6; margin-bottom:10px; font-weight:800; text-transform:uppercase;">Lista de Hoje</div>
-	            <div id="home-today-list" style="display:flex; flex-direction:column; gap:10px;"></div>
-	        </div>
-
-	        <div id="home-radar-section" style="margin-top:25px;"></div>
-	        <!-- Grid 2 colunas no desktop para 1V Esporte e Vale Plural -->
-	        <div class="home-sections-desktop-grid" style="margin-top:25px;">
-	            <div id="home-esporte-section"></div>
-	            <div id="home-plural-section"></div>
-	        </div>
-
-            <div id="home-widgets"></div>
-            <div id="home-footer" style="margin-top:25px;"></div>
 	    </section>
 
         <section id="view-play" class="view">
@@ -2558,6 +2608,10 @@
 	    </section>
 
 	    <section id="view-news" class="view">
+	        <!-- Ticker financeiro completo apenas na aba News -->
+	        <div class="finance-ticker" id="financeTicker" style="margin-bottom:4px;">
+	            <!-- Será alimentado pelo mesmo tickerTrack, via cloneNode quando entrar na aba -->
+	        </div>
 	        <div id="news-filters" class="filter-row"></div>
 		        <div id="news-feed" style="min-height:200px;">
 		            <div style="padding:20px;"><div class="skeleton" style="height:180px; width:100%; margin-bottom:15px;"></div><div class="skeleton" style="height:80px; width:100%; margin-bottom:10px;"></div><div class="skeleton" style="height:80px; width:80%; margin-bottom:10px;"></div><div class="skeleton" style="height:80px; width:60%;"></div></div>
@@ -2767,8 +2821,15 @@
 			</div>
 
 			<nav class="sidebar-left__nav" aria-label="Navegação principal">
-				<a class="sidebar-nav-item active" data-view="home" onclick="showView('home', this)">
-					<i data-lucide="house"></i><span>Início</span>
+				<!-- Botão Home com ring do relógio (igual ao mobile) -->
+				<a class="sidebar-nav-item active home-clock-btn" id="home-clock-btn-desktop" data-view="home" onclick="showView('home', this)" style="position:relative; display:flex; align-items:center; justify-content:flex-start; gap:10px; padding:10px 12px; margin-bottom:4px; border-radius:14px;">
+					<div style="position:relative; width:34px; height:34px; flex-shrink:0;">
+						<div class="clock-ring" id="clock-ring-desktop" style="position:absolute; inset:-4px; border-radius:50%;"></div>
+						<div style="width:34px; height:34px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:rgba(212,168,67,0.1);">
+							<img src="https://umvale.wordpress.com/wp-content/uploads/2026/05/23e9addd-68b6-4407-bd96-4b62fd82db94.png?w=196&h=196" alt="1V" style="width:26px; height:26px; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.5));">
+						</div>
+					</div>
+					<span>Início</span>
 				</a>
 				<a class="sidebar-nav-item" data-view="agenda" onclick="showView('agenda', this)">
 					<i data-lucide="calendar"></i><span>Onde Ir</span>
@@ -3790,9 +3851,8 @@
     }
 
     function renderFinanceTicker(items, meta = '') {
-        const track = document.getElementById('tickerTrack');
-        const ticker = document.getElementById('financeTicker');
-        if (!track || !ticker) return;
+        const tracks = document.querySelectorAll('.finance-ticker-track');
+        if (!tracks.length) return;
 
         let safeItems = Array.isArray(items) && items.length ? items : getFinancePlaceholderItems();
         // Garante no mínimo 4 itens para o scroll funcionar
@@ -3808,44 +3868,53 @@
             </div>
         `).join('');
 
-        track.innerHTML = html + html + html + html;
-        ticker.style.display = 'block';
+        tracks.forEach(track => {
+            track.innerHTML = html + html + html + html;
+            const ticker = track.closest('.finance-ticker');
+            if (ticker) ticker.style.display = 'block';
+        });
         startTickerAutoScroll();
     }
 
     let _tickerRaf = null;
     let _tickerPaused = false;
     function startTickerAutoScroll() {
-        const track = document.getElementById('tickerTrack');
-        const ticker = document.getElementById('financeTicker');
-        if (!track) return;
+        const tracks = document.querySelectorAll('.finance-ticker-track');
+        if (!tracks.length) return;
         if (_tickerRaf) { cancelAnimationFrame(_tickerRaf); _tickerRaf = null; }
         const speed = 0.6;
         let pos = 0;
-        let origWidth = 0;
-        function getOrigWidth() {
-            if (origWidth > 0) return origWidth;
-            const len = track.children.length;
-            if (!len) return 1;
-            const first = track.children[0];
-            const last = track.children[len - 1];
-            const right = last.getBoundingClientRect().right - first.getBoundingClientRect().left;
-            origWidth = (right || track.scrollWidth / 4) + 28;
-            return origWidth;
-        }
+
         function step() {
             if (!_tickerPaused) {
                 pos -= speed;
-                const ow = getOrigWidth();
-                if (Math.abs(pos) >= ow) pos += ow;
-                track.style.transform = `translateX(${pos}px)`;
+                tracks.forEach(track => {
+                    const firstItem = track.firstElementChild;
+                    if (firstItem) {
+                        const itemWidth = firstItem.offsetWidth + 20; // 20px gap
+                        if (Math.abs(pos) >= itemWidth) {
+                            // Instead of jumping back to 0, we can just move the first child to the end
+                            // But for a simple CSS-like ticker, we often just loop 4 times the content.
+                            // Let's use the simplest logic: if pos > track width / 4, reset.
+                            const totalWidth = track.scrollWidth / 4;
+                            if (Math.abs(pos) >= totalWidth) {
+                                pos = 0;
+                            }
+                        }
+                    }
+                    track.style.transform = `translateX(${pos}px)`;
+                });
             }
             _tickerRaf = requestAnimationFrame(step);
         }
-        ticker.onmouseenter = () => { _tickerPaused = true; };
-        ticker.onmouseleave = () => { _tickerPaused = false; };
-        ticker.ontouchstart = () => { _tickerPaused = true; };
-        ticker.ontouchend = () => { _tickerPaused = false; };
+
+        document.querySelectorAll('.finance-ticker').forEach(ticker => {
+            ticker.onmouseenter = () => { _tickerPaused = true; };
+            ticker.onmouseleave = () => { _tickerPaused = false; };
+            ticker.ontouchstart = () => { _tickerPaused = true; };
+            ticker.ontouchend = () => { _tickerPaused = false; };
+        });
+
         _tickerRaf = requestAnimationFrame(step);
     }
 
@@ -4057,10 +4126,17 @@
         const sideCardsEl = document.getElementById('home-side-cards');
         const doodleEl = document.getElementById('home-doodle');
         const todayContainer = document.getElementById('home-today-events');
-        const todayListEl = document.getElementById('home-today-list');
         const tempValueEl = document.getElementById('home-temp-value');
+        const riverValEl = document.getElementById('home-river-value');
+        const riverMetaEl = document.getElementById('home-river-meta');
         
         if (!spotlightEl || !sideCardsEl || !tempValueEl) return;
+
+        if (riverValEl && currentRiverData) {
+            const val = String(currentRiverData.value || '--');
+            riverValEl.textContent = val.includes('m') ? val : val + 'm';
+            if (riverMetaEl) riverMetaEl.textContent = currentRiverData.time || 'Nível Copel';
+        }
 
         const newsGroups = getHomeNewsGroups();
         const latestNews = newsGroups.spotlight;
@@ -6297,16 +6373,35 @@
                 currentRiverData = fbCache.data;
                 saveRiverToCache(currentRiverData);
                 scheduleRender();
-                return;
             }
         } catch (e) {}
-        // Se Firebase não tem dados, mostrar placeholder e tentar de novo
-        if (!currentRiverData) {
-            currentRiverData = { value: '---', time: 'Atualizando...', source: 'default' };
-            scheduleRender();
+
+        // Fallback: Real-time fetch if cache is too old or missing (Scraper nivelrioiguacu)
+        try {
+            const proxy = 'https://api.codetabs.com/v1/proxy/?quest=';
+            const url = 'https://nivelrioiguacu.com.br/';
+            const resp = await fetch(proxy + url, { cache: 'no-cache' });
+            const html = await resp.text();
+            
+            // Busca o valor no HTML (ex: <span class="nivel">2,45m</span>)
+            const levelMatch = html.match(/<span class="nivel">([\d,.]+)m?<\/span>/i);
+            if (levelMatch) {
+                const value = levelMatch[1].replace(',', '.');
+                const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const newData = { value, time, source: 'nivelrioiguacu' };
+                currentRiverData = newData;
+                saveRiverToCache(newData);
+                firebaseCacheSave('river', newData);
+                scheduleRender();
+            }
+        } catch (e) {
+            console.warn('River scraper fallback failed:', e);
         }
-        // Re-tentativa após 5s
-        setTimeout(() => loadRiverDataFromFirebaseCache().catch(()=>{}), 5000);
+
+        // Re-tentativa em caso de erro persistente
+        if (!currentRiverData || currentRiverData.value === '---') {
+            setTimeout(() => fetchRiverData().catch(()=>{}), 10000);
+        }
     }
 
     function closeValePlayGame() {
@@ -8079,6 +8174,47 @@
         if (clockBtn) clockBtn.style.boxShadow = `0 4px 16px ${shadowColor}66, 0 0 0 1px ${shadowColor}33`;
     }
 
+    function relocateWidgetsForDesktop() {
+        const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+        const sidebar = document.getElementById('sidebar-right');
+        const mainCol = document.querySelector('.desktop-main-col');
+        if (!sidebar || !mainCol) return;
+
+        const widgets = [
+            { id: 'home-finance-pill', order: 0 },
+            { id: 'home-impact-stats-container', order: 2 },
+            { id: 'home-today-events', order: 7 },
+            { id: 'home-widgets', order: 10 },
+            { id: 'home-footer', order: 11 }
+        ];
+
+        widgets.forEach(w => {
+            const el = document.getElementById(w.id);
+            if (!el) return;
+            if (isDesktop) {
+                if (el.parentElement !== sidebar) sidebar.appendChild(el);
+            } else {
+                if (el.parentElement !== mainCol) {
+                    // Restauração simples por ordem (mainCol tem outros elementos fixos)
+                    const children = Array.from(mainCol.children);
+                    let inserted = false;
+                    for (let i = 0; i < children.length; i++) {
+                        const child = children[i];
+                        // Se encontrarmos um elemento fixo que deveria vir DEPOIS deste widget
+                        // ou um widget já restaurado que tem ordem maior
+                        const childOrder = parseInt(child.getAttribute('data-order') || '999');
+                        if (childOrder > w.order) {
+                            mainCol.insertBefore(el, child);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if (!inserted) mainCol.appendChild(el);
+                }
+            }
+        });
+    }
+
     function updateClockRing() {
         const ringEl = document.getElementById('clock-ring');
         const ringDesktop = document.getElementById('clock-ring-desktop');
@@ -8099,6 +8235,8 @@
         }
     }
 
+    relocateWidgetsForDesktop();
+    window.addEventListener('resize', relocateWidgetsForDesktop);
     init();
     updateClockRing();
     setInterval(updateClockRing, 1000);

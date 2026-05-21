@@ -9,7 +9,7 @@ Instalação:
 
   Baixe a service account key em:
     Firebase Console > Configurações > Contas de serviço > Gerar nova chave privada
-  Salve como serviceAccountKey.json na mesma pasta deste script.
+  Salve como .secrets/serviceAccountKey.json ou defina UMVALE_SERVICE_ACCOUNT.
 """
 
 import json
@@ -29,30 +29,38 @@ CACHE_BASE = "/cache"
 
 RIVER_URL = lambda: f"https://www.copel.com/mhbweb/paginas/previsao.jsf?t={int(time.time() * 1000)}"
 NEWS_TAGS = [
-    "radar-iguacu", "esporte", "plural", "guiavale",
+    "", "radar-iguacu", "esportes", "valeplural", "oportunidades", "guiavale",
     "policial", "cultura", "politica", "educacao"
 ]
 UMVALE_PORTAL = "https://umvale.wordpress.com"
 WEATHER_LAT = -26.2311
 WEATHER_LON = -51.0869
 
-SERVICE_ACCOUNT_PATH = os.path.join(os.path.dirname(__file__), "serviceAccountKey.json")
+SERVICE_ACCOUNT_PATHS = [
+    os.environ.get("UMVALE_SERVICE_ACCOUNT"),
+    os.path.join(os.path.dirname(__file__), ".secrets", "serviceAccountKey.json"),
+    os.path.expanduser("~/.umvale/serviceAccountKey.json")
+]
 
 
 def init_firebase():
-    if fire_admin_available():
-        cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
+    service_account_path = get_service_account_path()
+    if service_account_path:
+        cred = credentials.Certificate(service_account_path)
         firebase_admin.initialize_app(cred, {"databaseURL": FIREBASE_DB_URL})
         print("[firebase] Admin SDK inicializado")
     else:
-        print("[firebase] ERRO: serviceAccountKey.json não encontrado")
+        print("[firebase] ERRO: service account não encontrada")
         print("        Baixe em: Firebase Console > Configurações > Contas de serviço")
-        print("        Salve como serviceAccountKey.json na pasta do script")
+        print("        Salve como .secrets/serviceAccountKey.json ou defina UMVALE_SERVICE_ACCOUNT")
         exit(1)
 
 
-def fire_admin_available():
-    return os.path.isfile(SERVICE_ACCOUNT_PATH)
+def get_service_account_path():
+    for path in SERVICE_ACCOUNT_PATHS:
+        if path and os.path.isfile(path):
+            return path
+    return None
 
 
 def fb_put(path, data):
@@ -76,52 +84,60 @@ def fetch_river():
         clean = clean.replace('&nbsp;', ' ').replace('\xa0', ' ')
         clean = re.sub(r'\s+', ' ', clean).strip()
 
-        patterns = [
-            # Padrão "Com chuva" (7 colunas): data/régua/nível/vazão/chuva
-            r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)',
-            # Padrão "Sem chuva" (4 colunas): data/régua/nível/vazão
-            r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)',
-            # Padrão genérico: qualquer linha com data e 3+ números
-            r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+([\d,]+)\s+([\d,]+)\s+([\d,.]+)\s+',
-            # Fallback: último valor considerado + leitura da régua
-            r'[Uu]ltimo\s*[Vv]alor\s*[Cc]onsiderado:?\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}).*?(\d+[.,]\d+)\s+m',
-        ]
+        import time, datetime
+        now_ts = int(time.time() * 1000)
 
-        for pat in patterns:
-            m = re.search(pat, clean)
-            if m:
-                groups = m.groups()
-                if len(groups) >= 4:
-                    return {
-                        "value": f"{m.group(2)}m",
-                        "time": f"Copel • {m.group(1)}",
+        # Padrão robusto para "Último valor considerado" com Régua + Nível + Vazão
+        main_value = None
+        pat = r'[U\u00da]ltimo\s*[Vv]alor\s*[Cc]onsiderado:?\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})\s+Leitura\s+da\s+r\u00e9gua\s+\(m\)\s+N\u00edvel\s+de\s+\u00e1gua\s+\(m\)\s+Vaz\u00e3o\s+\(m\u00b3/s\)\s+([\d,.]+)\s+([\d,.]+)\s+([\d,.]+)'
+        m = re.search(pat, clean)
+        if m:
+            dt_str, reg_str, niv_str, vaz_str = m.groups()
+            try:
+                dt_obj = datetime.datetime.strptime(dt_str, "%d/%m/%Y %H:%M")
+                ts = int(dt_obj.timestamp() * 1000)
+            except Exception:
+                ts = now_ts
+            
+            # Rejeitar data futura
+            if ts > now_ts + 300000:
+                print(f"[river] Data futura ignorada: {dt_str}")
+                main_value = None
+            else:
+                main_value = {
+                    "value": f"{reg_str}m",
+                    "time": f"Copel \u2022 {dt_str}",
+                    "source": "copel-cota",
+                    "waterLevel": f"{niv_str}m",
+                    "flow": f"{vaz_str} m\u00b3/s",
+                    "ts": ts
+                }
+
+        # Fallback: regex simples do "Último valor considerado" (sem as colunas)
+        if not main_value:
+            last_match = re.search(r'[U\u00da]ltimo\s*[Vv]alor\s*[Cc]onsiderado:?\s*(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}).*?([\d]+[,.]\d+)', clean)
+            if last_match:
+                dt_str, reg = last_match.groups()
+                try:
+                    dt_obj = datetime.datetime.strptime(dt_str, "%d/%m/%Y %H:%M")
+                    ts = int(dt_obj.timestamp() * 1000)
+                except Exception:
+                    ts = now_ts
+                if ts <= now_ts + 300000:  # Nunca aceitar data futura
+                    main_value = {
+                        "value": f"{reg}m",
+                        "time": f"Copel \u2022 {dt_str}",
                         "source": "copel-cota",
-                        "waterLevel": f"{m.group(3)}m",
-                        "flow": f"{m.group(4)} m³/s"
-                    }
-                elif len(groups) >= 2:
-                    return {
-                        "value": f"{m.group(2)}m",
-                        "time": f"Copel • {m.group(1)}",
-                        "source": "copel-cota",
                     }
 
-        # Se nada funcionou, tenta extrair qualquer número com data próxima
-        any_date = re.search(r'(\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2})', clean)
-        any_value = re.search(r'([\d,]+[.,]\d+)\s*m', clean)
-        if any_date and any_value:
-            return {
-                "value": f"{any_value.group(1).replace(',', '.')}m",
-                "time": f"Copel • {any_date.group(1)}",
-                "source": "copel-cota",
-            }
+        if main_value:
+            return main_value
 
-        print("[river] Nenhum padrão encontrado na página Copel")
+        print("[river] Nenhum padr\u00e3o v\u00e1lido encontrado (datas futuras ignoradas)")
         return None
     except Exception as e:
         print(f"[river] erro: {e}")
         return None
-
 
 def fetch_weather():
     try:
@@ -181,7 +197,7 @@ def fetch_news():
     all_items = []
     seen = set()
     for tag in NEWS_TAGS:
-        feed_url = f"{UMVALE_PORTAL}/tag/{tag}/feed/"
+        feed_url = f"{UMVALE_PORTAL}/feed/" if not tag else f"{UMVALE_PORTAL}/tag/{tag}/feed/"
         items = parse_rss(feed_url)
         for item in items:
             key = (item["link"] or item["title"]).strip().rstrip("/")
@@ -193,34 +209,74 @@ def fetch_news():
     return all_items[:100]
 
 
+def unfold_ics(text):
+    # Unfold wrapped lines in iCalendar format
+    return re.sub(r'\r?\n[ \t]', '', text)
+
+
 def fetch_events():
     ics_url = "https://calendar.google.com/calendar/ical/umvalenews%40gmail.com/private-eee641ec0ceb07e720225f41edb52d91/basic.ics"
     try:
         r = requests.get(ics_url, timeout=12)
+        r.encoding = 'utf-8' # Force utf-8 parsing
+        text = unfold_ics(r.text)
+        
         events = []
-        for block in re.finditer(r"BEGIN:VEVENT(.*?)END:VEVENT", r.text, re.DOTALL):
-            text = block.group(1)
+        for block in re.finditer(r"BEGIN:VEVENT(.*?)END:VEVENT", text, re.DOTALL):
+            vevent_text = block.group(1)
 
-            def extract(name):
-                m = re.search(rf"{name}:?(.*?)(?:\r?\n)", text)
-                return m.group(1).strip() if m else ""
+            def extract_property(prop_key):
+                # Matches key followed by semicolon or colon, capturing up to the end of line
+                m = re.search(rf"^{prop_key}[;:][^\r\n]*", vevent_text, re.MULTILINE)
+                if not m:
+                    return ""
+                line = m.group(0)
+                parts = line.split(":", 1)
+                if len(parts) < 2:
+                    return ""
+                val = parts[1].strip()
+                # Unescape ical standard characters
+                val = val.replace("\\,", ",").replace("\\;", ";").replace("\\n", "\n").replace("\\\\", "\\")
+                return val
 
-            dtstart = extract("DTSTART")
-            dtend = extract("DTEND")
-            summary = extract("SUMMARY")
-            location = extract("LOCATION")
-            desc = extract("DESCRIPTION")[:300]
+            summary = extract_property("SUMMARY")
             if not summary:
                 continue
-            clean_dt = lambda d: re.sub(r'(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})', r'\1-\2-\3T\4:\5:\6', d)
+
+            dtstart = extract_property("DTSTART")
+            dtend = extract_property("DTEND")
+            location = extract_property("LOCATION") or "Vale do Iguaçu"
+            desc = extract_property("DESCRIPTION")
+
+            def clean_dt(d):
+                if not d:
+                    return ""
+                d = d.strip()
+                # Match YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
+                m = re.match(r'^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z)?$', d)
+                if m:
+                    g = m.groups()
+                    tz_suffix = "Z" if g[6] else ""
+                    return f"{g[0]}-{g[1]}-{g[2]}T{g[3]}:{g[4]}:{g[5]}{tz_suffix}"
+                # Match YYYYMMDD (all day date)
+                m = re.match(r'^(\d{4})(\d{2})(\d{2})$', d)
+                if m:
+                    g = m.groups()
+                    return f"{g[0]}-{g[1]}-{g[2]}"
+                return d
+
             start_str = clean_dt(dtstart)
             end_str = clean_dt(dtend) if dtend else ""
+            is_all_day = 'T' not in start_str
+
             events.append({
-                "summary": summary,
+                "title": summary,
                 "start": start_str,
                 "end": end_str,
+                "allDay": is_all_day,
                 "location": location,
-                "description": desc[:200]
+                "description": desc[:200],
+                "source": "calendar-cache"
             })
         return events
     except Exception as e:
@@ -350,11 +406,10 @@ def main():
     print(f"[{datetime.now().isoformat()}] Iniciando atualização do cache Firebase...")
     init_firebase()
 
-    river = fetch_river()
-    if river:
-        fb_put(f"{CACHE_BASE}/river/data", river)
-        fb_put(f"{CACHE_BASE}/river/updatedAt", int(time.time() * 1000))
-        print(f"  [river] {river['value']}")
+    # [river] DESABILITADO — gerenciado exclusivamente pelo rio_scraper.py (vvale.com.br)
+    # com histórico horário. Não alterar aqui para não sobrescrever o histórico acumulado.
+    # river = fetch_river()
+
 
     weather = fetch_weather()
     if weather:
@@ -385,7 +440,7 @@ def main():
         print(f"  [sports] {len(sports)} ligas geradas")
 
     app_cache = {
-        "river": river or {},
+        "river": {},  # gerenciado pelo rio_scraper.py — não sobrescrever aqui
         "weather": weather or {},
         "news": news or [],
         "events": events or [],

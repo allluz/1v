@@ -1,8 +1,15 @@
 name: Cache Updater
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/cache-updater.yml'
+      - 'firebase_cache_updater.py'
+      - 'scripts/rio_scraper.py'
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -22,7 +29,11 @@ jobs:
 
       - name: Decodificar service account key
         run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" | base64 --decode > serviceAccountKey.json
+          mkdir -p .secrets
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" | base64 --decode > .secrets/serviceAccountKey.json
 
       - name: Rodar cache updater
         run: python firebase_cache_updater.py
+
+      - name: Atualizar nível do Rio Iguaçu
+        run: python scripts/rio_scraper.py
